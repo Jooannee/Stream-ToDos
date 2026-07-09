@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Stream ToDos!</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{%static 'todos/style.css'%}">
+</head>
+<body>
+    <h1>Welcome to Stream ToDos {{user.username}}! Let's get you set up!</h1>
+    <form action="{% url 'todos:createProfile' %}" method="post">
+        {% csrf_token %}
+        {% if error_message %}<p><strong>{{error_message}}</strong></p> {% endif %}
+        <fieldset>
+            <legend>Preferences</legend>
+            <input type="number" name="max_viewer_todos" id="max_viewer_todos" min="0" max="10" placeholder="3" step="1">
+            <label for="max_viewer_todos">How many todos can a single viewer create? (0 for infinite)</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Your first List!</legend>
+            <input type="text" name="list_title" id="list_title">
+            <label for="list_title">Your first list's name!</label>
+        </fieldset>
+        <input type="submit" value="Let's go!">
+    </form>
+</body>
+</html>

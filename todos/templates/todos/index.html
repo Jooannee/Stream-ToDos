@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Todos</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{%static 'todos/style.css'%}">
+</head>
+<body>
+    <h1>Homepage coming soon :3</h1>
+    {% if user.is_authenticated %}
+        <H3>Currently logged in as {{user.username}}</H3>
+        <a href="/accounts/">Account management here</a> <br>
+        <a href="/dashboard">Dashboard here</a>
+    {% else %}
+        <a href="/accounts/login">Twitch Login here</a>
+    {% endif %}
+
+</body>
+</html>
