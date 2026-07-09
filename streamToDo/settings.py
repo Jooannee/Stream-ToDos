@@ -137,3 +137,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+SOCIALACCOUNT_STORE_TOKENS = True
+SOCIALACCOUNT_PROVIDERS = {
+    'twitch': {
+        'SCOPE': [
+            'user:read:email',
+            'chat:read',
+        ],
+    }
+}
