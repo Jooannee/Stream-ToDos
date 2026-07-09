@@ -140,10 +140,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-
-
 SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_PROVIDERS = {
     'twitch': {
@@ -153,3 +149,20 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     }
 }
+
+# Disable standard email/password registration completely
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Skip the "Are you sure you want to log in via Twitch?" landing page
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Prevent standard username/password signup forms from being accessible
+ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+
+# Redirect configurations
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

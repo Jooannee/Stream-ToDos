@@ -16,8 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from allauth.socialaccount.providers.twitch.views import oauth2_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls'))
+    
+    path('accounts/login/', oauth2_login, name='account_login'),
+    path('accounts/signup/', oauth2_login, name='account_signup'),
+    path('accounts/', include('allauth.urls')),
+
+    path('', include('todos.urls')),
 ]
