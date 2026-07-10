@@ -63,6 +63,7 @@ class TodoItem(models.Model):
                 ).count()
                 self.chat_index = active_todos + 1
         super().save(*args, **kwargs)
+        return self.chat_index
 
     def __str__(self):
         return f"[{self.todo_list.name}] {self.title}"
