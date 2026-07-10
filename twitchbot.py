@@ -44,19 +44,25 @@ class Bot(commands.AutoBot):
         LOGGER.info("Successfully logged in as: %s", self.bot_id)
 
 @sync_to_async(thread_sensitive=True)
-def fetch_profile(streamerName:str):
+def fetch_profile(streamerName:str) -> StreamerProfile:
     return StreamerProfile.objects.get(twitch_username=streamerName)
 @sync_to_async(thread_sensitive=True)
-def fetch_profile_lists(profile:StreamerProfile):
+def fetch_profile_lists(profile:StreamerProfile) -> tuple[TodoList, TodoList]:
     return profile.active_chat_list, profile.active_streamer_list
 @sync_to_async(thread_sensitive=True)
-def fetch_profile_limit(profile:StreamerProfile):
+def fetch_profile_limit(profile:StreamerProfile) -> int:
     return profile.max_viewer_todos
 @sync_to_async
-def fetch_list_items(todo_list:TodoList, filter:dict=None):
+def fetch_list_items(todo_list:TodoList, filter:dict=None) -> list[TodoItem]:
     if not filter:
         return list(todo_list.items.all())
     return list(todo_list.items.filter(**filter))
+@sync_to_async
+def format_list_items(items:list[TodoItem]) -> str:
+    ret=""
+    for item in items:
+        ret+=f"{item.chat_index}. {item.title};    "
+    return ret
 
 
 class funCommands(commands.Component):
@@ -90,7 +96,7 @@ class todoCommands(commands.Component):
         if not chat_list or not streamer_list:
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
-        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter})
+        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter, "status":"pending"})
         if len(chatterItems) >= limit:
             await ctx.reply("You've reached the streamers limit for todos from a single chatter! Get something done before adding more!")
             return
@@ -106,7 +112,20 @@ class todoCommands(commands.Component):
 
         await ctx.reply(f"Your todo has been added to the list! Use \"!todos done {chat_index}\" later on to mark it as done!")
 
+    @todos.command(name="list", aliases=["all", "mine", "my"])
+    async def todos_list(self, ctx:commands.Context):
+        profile = await fetch_profile(ctx.broadcaster.name)
+        chat_list, streamer_list = await fetch_profile_lists(profile)
 
+        if not chat_list or not streamer_list:
+            await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
+            return
+        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter, "status":"pending"})
+        if not chatterItems:
+            await ctx.reply("You don't currently have any todos!")
+            return
+        items_formatted = await format_list_items(chatterItems)
+        await ctx.reply(f"These are your current todos: {items_formatted}")
 
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
