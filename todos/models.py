@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -62,6 +63,9 @@ class TodoItem(models.Model):
                     status='pending'
                 ).count()
                 self.chat_index = active_todos + 1
+        if not self.completed_at and self.status == 'completed':
+            self.completed_at = timezone.now()
+
         super().save(*args, **kwargs)
         return self.chat_index
 

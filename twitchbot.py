@@ -58,6 +58,9 @@ def fetch_list_items(todo_list:TodoList, filter:dict=None) -> list[TodoItem]:
         return list(todo_list.items.all())
     return list(todo_list.items.filter(**filter))
 @sync_to_async
+def fetch_single_item(todo_list:TodoList, filter:dict) -> TodoItem:
+    return todo_list.items.get(**filter)
+@sync_to_async
 def format_list_items(items:list[TodoItem]) -> str:
     ret=""
     for item in items:
@@ -127,6 +130,31 @@ class todoCommands(commands.Component):
         items_formatted = await format_list_items(chatterItems)
         await ctx.reply(f"These are your current todos: {items_formatted}")
 
+    @todos.command(name="done", aliases=["complete", "finish"])
+    async def todos_done(self, ctx:commands.Context, index:int=None):
+        """TODO: Make checking for the item more elegant/throw different errors depending on cause"""
+        profile = await fetch_profile(ctx.broadcaster.name)
+        chat_list, streamer_list = await fetch_profile_lists(profile)
+
+        if not chat_list or not streamer_list:
+            await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
+            return
+        if not index:
+            await ctx.reply("Add the index of the todo you want to mark as complete!")
+            return
+        item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter, "chat_index":index})
+        if not item:
+            await ctx.reply("I couldn't find that todo!")
+            return
+        
+        @sync_to_async(thread_sensitive=True)
+        def save_done():
+            item.status = "completed"
+            item.save()
+        await save_done()
+        await ctx.reply("Another one down, nice work!")
+
+
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
     subs: list[eventsub.SubscriptionPayload] = []
@@ -142,7 +170,6 @@ async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionP
         subs.extend([eventsub.ChatMessageSubscription(broadcaster_user_id=channel.account.uid, user_id=BOT_ID)])
     
     return tokens, subs
-
 
 def main() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
@@ -160,8 +187,6 @@ def main() -> None:
         asyncio.run(runner())
     except KeyboardInterrupt:
         LOGGER.warning("Keyboardinterrupt, Shutting down Bot")
-
-
 
 if __name__ == "__main__":
     main()
