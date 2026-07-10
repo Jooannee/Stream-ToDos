@@ -19,11 +19,14 @@ from django.urls import path, include
 from allauth.socialaccount.providers.twitch.views import oauth2_login
 
 urlpatterns = [
+    # Default admin page
     path('admin/', admin.site.urls),
     
+    # Login pages from allauth, custom urls to restrict to twitch oauth only
     path('accounts/login/', oauth2_login, name='account_login'),
     path('accounts/signup/', oauth2_login, name='account_signup'),
     path('accounts/', include('allauth.urls')),
 
+    # Main app URLs
     path('', include('todos.urls')),
 ]
