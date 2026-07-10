@@ -40,7 +40,7 @@ def createProfile(request):
     user = request.user
     
     # Safe input handling; replace with defaults where possible, throw user error on incorrectly formatted inputs
-    max_todos_raw = request.POST.get("max_viewer_todos", "3")
+    max_todos_raw = request.POST.get("max_viewer_todos", 3)
     list_title = request.POST.get("list_title", "").strip()
     try:
         max_todos = int(max_todos_raw)
