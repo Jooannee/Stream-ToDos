@@ -144,8 +144,8 @@ SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_PROVIDERS = {
     'twitch': {
         'SCOPE': [
-            'user:read:email',
-            'chat:read',
+            'channel:bot',
+            'user:read:email'
         ],
     }
 }
