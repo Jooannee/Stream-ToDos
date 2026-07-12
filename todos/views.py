@@ -1,9 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.urls import reverse
 
 from .models import TodoList, StreamerProfile
+
+import uuid
 
 # Basic Homepage
 def index(request):
@@ -36,6 +39,8 @@ def tutorial(request):
     else:
         return render(request, 'todos/tutorial.html')
     
+@login_required
+@require_POST
 def createProfile(request):
     user = request.user
     
@@ -66,3 +71,15 @@ def createProfile(request):
     first_list.save()
 
     return HttpResponseRedirect(reverse("todos:dashboard"))
+
+def embed(request, user_id:uuid, todo_list:str):
+    streamer = get_object_or_404(StreamerProfile, obs_token=user_id)
+    if todo_list == "chatlist":
+        embed_list = streamer.active_chat_list
+    elif todo_list == "streamerlist":
+        embed_list = streamer.active_streamer_list
+    else:
+        embed_list = get_object_or_404(TodoList, streamer=streamer, name=todo_list)
+    if not embed_list: raise Http404("Requested list does not exist")
+
+    return render(request, 'todos/embed.html', {"list":embed_list})

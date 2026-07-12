@@ -10,4 +10,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name="dashboard"),
     path('tutorial/', views.tutorial, name="tutorial"),
     path('createProfile/', views.createProfile, name="createProfile"),
+
+    # OBS Source
+    path('embed/<uuid:user_id>/<str:todo_list>/', views.embed, name="embed")
 ]
