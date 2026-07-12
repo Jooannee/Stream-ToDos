@@ -112,7 +112,7 @@ class todoCommands(commands.Component):
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
         chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
-        if len(chatterItems) >= limit:
+        if limit !=0 and len(chatterItems) >= limit:
             await ctx.reply("You've reached the streamers limit for todos from a single chatter! Get something done before adding more!")
             return
         if not title:
