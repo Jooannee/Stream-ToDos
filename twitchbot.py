@@ -59,13 +59,25 @@ def fetch_list_items(todo_list:TodoList, filter:dict=None) -> list[TodoItem]:
     return list(todo_list.items.filter(**filter))
 @sync_to_async
 def fetch_single_item(todo_list:TodoList, filter:dict) -> TodoItem:
-    return todo_list.items.get(**filter)
+    try:
+        return todo_list.items.get(**filter)
+    except (TodoItem.DoesNotExist, TodoItem.MultipleObjectsReturned):
+        return None
+
+
 @sync_to_async
-def format_list_items(items:list[TodoItem]) -> str:
-    ret=""
-    for item in items:
-        ret+=f"{item.chat_index}. {item.title};    "
-    return ret
+def format_list_items(items: list[TodoItem]) -> str:
+    return "    ".join(f"{item.chat_index}. {item.title};" for item in items)
+
+
+@sync_to_async(thread_sensitive=True)
+def save_done(item):
+    item.status = "completed"
+    item.save()
+@sync_to_async(thread_sensitive=True)
+def save_new_item(todo_list, creator_name, title):
+    newItem = TodoItem(todo_list=todo_list, creator_name=creator_name, title=title)
+    return newItem.save()
 
 
 class funCommands(commands.Component):
@@ -74,7 +86,7 @@ class funCommands(commands.Component):
 
     @commands.command()
     async def hi(self, ctx:commands.Context) -> None:
-        await ctx.reply(f"ello {ctx.chatter}! :3")
+        await ctx.reply(f"ello {ctx.chatter.name}! :3")
 
 class todoCommands(commands.Component):
     def __init__(self, bot:Bot):
@@ -99,20 +111,15 @@ class todoCommands(commands.Component):
         if not chat_list or not streamer_list:
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
-        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter, "status":"pending"})
+        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
         if len(chatterItems) >= limit:
             await ctx.reply("You've reached the streamers limit for todos from a single chatter! Get something done before adding more!")
             return
         if not title:
             await ctx.reply("Please add a title for your todo!")
             return
-        
-        @sync_to_async(thread_sensitive=True)
-        def save_new_item():
-            newItem = TodoItem(todo_list=chat_list, creator_name=ctx.chatter, title=title)
-            return newItem.save()
-        chat_index = await save_new_item()
 
+        chat_index = await save_new_item(chat_list, ctx.chatter.name, title)
         await ctx.reply(f"Your todo has been added to the list! Use \"!todos done {chat_index}\" later on to mark it as done!")
 
     @todos.command(name="list", aliases=["all", "mine", "my"])
@@ -123,7 +130,7 @@ class todoCommands(commands.Component):
         if not chat_list or not streamer_list:
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
-        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter, "status":"pending"})
+        chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
         if not chatterItems:
             await ctx.reply("You don't currently have any todos!")
             return
@@ -142,16 +149,12 @@ class todoCommands(commands.Component):
         if not index:
             await ctx.reply("Add the index of the todo you want to mark as complete!")
             return
-        item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter, "chat_index":index})
+        item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index})
         if not item:
             await ctx.reply("I couldn't find that todo!")
             return
-        
-        @sync_to_async(thread_sensitive=True)
-        def save_done():
-            item.status = "completed"
-            item.save()
-        await save_done()
+
+        await save_done(item)
         await ctx.reply("Another one down, nice work!")
 
 
