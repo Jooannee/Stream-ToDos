@@ -48,17 +48,18 @@ def createProfile(request):
     
     # Safe input handling; replace with defaults where possible, throw user error on incorrectly formatted inputs
     max_todos_raw = request.POST.get("max_viewer_todos", 3)
-    list_title = request.POST.get("list_title", "").strip()
+    streamer_list_title = request.POST.get("streamer_list_title", "").strip()
+    chat_list_title = request.POST.get("chat_list_title", "").strip()
     try:
         max_todos = int(max_todos_raw)
     except ValueError:
         return render(request, "todos/tutorial.html", {"error_message": "Please enter a valid number."})
     if max_todos < 0 or max_todos > 10:
         return render(request, "todos/tutorial.html", {"error_message": "Please keep the maximum viewer todos between 0 and 10."})
-    if not list_title:
-        return render(request, "todos/tutorial.html", {"error_message": "Please enter a name for your first list."})
+    if not streamer_list_title or not chat_list_title:
+        return render(request, "todos/tutorial.html", {"error_message": "Please enter names for your first lists."})
         
-    # Create profile object & first list
+    # Create profile object & first lists and declare as active lists
     profile = StreamerProfile(
         user=user, 
         twitch_username=user.username, 
@@ -66,11 +67,20 @@ def createProfile(request):
     )
     profile.save()
     
-    first_list = TodoList(
+    first_streamer_list = TodoList(
         streamer=profile, 
-        name=list_title
+        name=streamer_list_title
     )
-    first_list.save()
+    first_chat_list = TodoList(
+        streamer=profile, 
+        name=chat_list_title
+    )
+    first_streamer_list.save()
+    first_chat_list.save()
+
+    profile.active_chat_list = first_chat_list
+    profile.active_streamer_list = first_streamer_list
+    profile.save()
 
     return HttpResponseRedirect(reverse("todos:dashboard"))
 
