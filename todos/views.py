@@ -19,6 +19,7 @@ def dashboard(request):
     if hasattr(request.user, "profile"):
         streamer = request.user.profile
         lists = TodoList.objects.filter(streamer=streamer)
+        base_url = request.build_absolute_uri("/")
         
     # If it doesn't redirect to tutorial (Likely first launch)
     else:
@@ -27,6 +28,7 @@ def dashboard(request):
     context = {
         'streamer': streamer,
         'lists': lists,
+        'base_url': base_url,
     }
     return render(request, 'todos/dashboard.html', context)
 

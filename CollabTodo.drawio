@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" pages="2">
     <diagram name="Basic Plan Flowchart" id="a3ES6iVRQ9NHIjRZUKuX">
-        <mxGraphModel dx="1338" dy="1315" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="2286" dy="1288" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -130,7 +130,7 @@
                     <mxGeometry x="1255" y="-175" width="159" height="65" as="geometry"/>
                 </mxCell>
                 <mxCell id="uRwUgq7Rb0M7A1khfdQl-1" value="Other data besides name/title for todo?" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
-                    <mxGeometry x="924" y="-191" width="159" height="65" as="geometry"/>
+                    <mxGeometry x="845" y="-191" width="238" height="65" as="geometry"/>
                 </mxCell>
                 <mxCell id="uRwUgq7Rb0M7A1khfdQl-3" value="Twitch oAuth login? Otherwise full selfhost probably" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
                     <mxGeometry x="-113.5" y="-401" width="159" height="65" as="geometry"/>
@@ -153,11 +153,11 @@
                 <mxCell id="uRwUgq7Rb0M7A1khfdQl-14" value="&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;TwitchIO&lt;/span&gt;" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=light-dark(#6A00FF,#4C0099);strokeColor=#3700CC;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="474" y="-123" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="uRwUgq7Rb0M7A1khfdQl-18" value="BASEDOMAIN/{LISTUUID}" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-724" y="176" width="174" height="70" as="geometry"/>
+                <mxCell id="uRwUgq7Rb0M7A1khfdQl-18" value="BASEDOMAIN/{USERUUID}/{LISTNAME}" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-832" y="176" width="282" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="uRwUgq7Rb0M7A1khfdQl-23" value="&lt;div&gt;BASEDOMAIN/{USERUUID}/CHATLIST&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;BASEDOMAIN/{USERUUID}/STREAMERLIST&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-723" y="315" width="189" height="86" as="geometry"/>
+                    <mxGeometry x="-846" y="315" width="312" height="86" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

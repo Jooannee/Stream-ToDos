@@ -1,0 +1,15 @@
+:root {
+    /* Basic Color stuff */
+    --dark-purple:#2D1B33;
+    --mid-pink:#7B5292;
+    --light-pink:#E0BBE4;
+    --cream-yellow:#FFF7DA;
+    --dark-green:#083D41;
+}
+
+header {
+    background: var(#ff0000);
+}
+
+#loginBTN {
+}

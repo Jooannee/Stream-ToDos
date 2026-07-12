@@ -8,13 +8,33 @@
     {% load static %}
     <link rel="stylesheet" href="{%static 'todos/style.css'%}">
 </head>
+<script type="text/javascript">
+    function copyObsLink(todoList) {
+        let finalLink = "{{base_url}}"+"embed/"+"{{streamer.obs_token}}"+"/"+todoList;
+        navigator.clipboard.writeText(finalLink);
+    }
+</script>
+
+
 <body>
     <h1>Stream Todos</h1>
-    <h3>Welcome {{user.username}}</h3>
+    <h3 style="display: inline;">Welcome {{user.username}}</h3> <a href="/accounts/">Account management</a> <br>
+    <button onclick="copyObsLink('chatlist')">Chatlist OBS Source</button>
+    <button onclick="copyObsLink('streamerlist')">Streamerlist OBS Source</button>
 
-    <h2>Current Lists</h2> <button>Create new List</button>
-    <ul>
-        
-    </ul>
+    <h2>Current Lists - {{ lists|length }}</h2>
+    {% for tlist in lists %}
+        <h3>{{tlist.name}} - {{tlist.items.all|length}} item{{tlist.items.all|pluralize}}</h3>
+        <button onclick="copyObsLink('{{tlist.name}}')">List OBS Source</button>
+        <ul>
+            {% for todo in tlist.items.all %}
+                <li>{{todo.creator_name}} - {{todo.title}}</li>
+            {% empty %}
+                <li>This list is empty!</li>
+            {% endfor %}
+        </ul>
+        <button>Add new Todo</button>
+    {% endfor %}
+    <button>Create new List</button>
 </body>
 </html>
