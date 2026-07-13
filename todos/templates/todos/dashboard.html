@@ -30,7 +30,22 @@
     <h2>Current Lists - {{ lists|length }}</h2>
     {% for tlist in lists %}
         <h3 style="display: inline;">{{tlist.name}} - {{tlist.items.all|length}} item{{tlist.items.all|pluralize}}</h3>
-        <button onclick="copyObsLink('{{tlist.name}}')">List OBS Source</button>
+        <button onclick="copyObsLink('{{tlist.name}}')">List OBS Source</button> <br>
+        <form action="{% url 'todos:deleteList' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="todo_list" value="{{tlist.name}}">
+            <button type="submit">Delete List!</button>
+        </form>
+        <form action="{% url 'todos:setChatList' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="todo_list" value="{{tlist.name}}">
+            <button type="submit">Make this one chat's List!</button>
+        </form>
+        <form action="{% url 'todos:setStreamerList' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="todo_list" value="{{tlist.name}}">
+            <button type="submit">Make this one your List!</button>
+        </form>
         <ul>
             {% for todo in tlist.items.all %}
                 <li>{{todo.creator_name}} - {{todo.title}}</li>
@@ -44,17 +59,11 @@
             <button type="submit">Add new Todo</button>
         </form> <br>
     {% endfor %}
-    <button command="show-modal" commandfor="list-create-dialog">Create new List</button>
 
-
-    <dialog id="list-create-dialog">
-        <form action="{% url 'todos:createList' %}" method="post">
-            {% csrf_token %}
-            <input type="text" name="title" id="title">
-            <label for="title">List Title</label>
-
-            <button type="submit">Create</button>
-        </form>
-    </dialog>
+    <form action="{% url 'todos:createList' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="title" id="title">
+        <button type="submit">Create new list</button>
+    </form>
 </body>
 </html>
