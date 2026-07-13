@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.urls import reverse
 
-from .models import TodoList, StreamerProfile
+from .models import TodoList, StreamerProfile, TodoItem
 
 import uuid
 
@@ -115,6 +115,30 @@ def createList(request):
     new_list = TodoList(streamer=streamer, name=list_title)
     new_list.save()
     return HttpResponseRedirect(reverse("todos:dashboard"))
+
+@login_required
+@require_POST
+def createTodo(request, todo_list:str):
+    user = request.user
+    streamer = user.profile
+    lists = TodoList.objects.filter(streamer=streamer)
+    tlist = get_object_or_404(TodoList, name=todo_list)
+
+    todo_title = request.POST.get("title", "")
+    if not todo_title:
+        base_url = request.build_absolute_uri("/")
+        context = {
+        'streamer': streamer,
+        'lists': lists,
+        'base_url': base_url,
+        'error_message': "You didn't supply a title for the todo!"
+        }
+        return render(request, 'todos/dashboard.html', context)
+    
+    new_item = TodoItem(todo_list=tlist, creator_name=streamer.twitch_username, title=todo_title)
+    new_item.save()
+    return HttpResponseRedirect(reverse("todos:dashboard"))
+
 
 
 def embed(request, user_id:uuid, todo_list:str):

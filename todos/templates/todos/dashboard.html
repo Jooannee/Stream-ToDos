@@ -38,7 +38,11 @@
                 <li>This list is empty!</li>
             {% endfor %}
         </ul>
-        <button>Add new Todo</button> <br>
+        <form action="{% url 'todos:createTodo' tlist.name%}" method="post">
+            {% csrf_token %}
+            <input type="text" name="title" id="title">
+            <button type="submit">Add new Todo</button>
+        </form> <br>
     {% endfor %}
     <button command="show-modal" commandfor="list-create-dialog">Create new List</button>
 

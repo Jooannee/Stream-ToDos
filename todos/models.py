@@ -57,11 +57,10 @@ class TodoItem(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.chat_index and self.status == 'pending':
-            if self.todo_list.streamer.active_chat_list == self.todo_list:
-                max_index = TodoItem.objects.filter(
-                    todo_list=self.todo_list
-                ).aggregate(models.Max('chat_index'))
-                self.chat_index = (max_index['chat_index__max'] or 0) + 1
+            max_index = TodoItem.objects.filter(
+                todo_list=self.todo_list
+            ).aggregate(models.Max('chat_index'))
+            self.chat_index = (max_index['chat_index__max'] or 0) + 1
         if not self.completed_at and self.status == 'completed':
             self.completed_at = timezone.now()
 
