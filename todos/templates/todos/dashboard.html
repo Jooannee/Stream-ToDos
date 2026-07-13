@@ -13,18 +13,23 @@
         let finalLink = "{{base_url}}"+"embed/"+"{{streamer.obs_token}}"+"/"+todoList;
         navigator.clipboard.writeText(finalLink);
     }
+
+
 </script>
 
 
 <body>
     <h1>Stream Todos</h1>
     <h3 style="display: inline;">Welcome {{user.username}}</h3> <a href="/accounts/">Account management</a> <br>
+    {% if error_message %}
+        <strong>{{error_message}}</strong> <br>
+    {% endif %}
     <button onclick="copyObsLink('chatlist')">Chatlist OBS Source</button>
     <button onclick="copyObsLink('streamerlist')">Streamerlist OBS Source</button>
 
     <h2>Current Lists - {{ lists|length }}</h2>
     {% for tlist in lists %}
-        <h3>{{tlist.name}} - {{tlist.items.all|length}} item{{tlist.items.all|pluralize}}</h3>
+        <h3 style="display: inline;">{{tlist.name}} - {{tlist.items.all|length}} item{{tlist.items.all|pluralize}}</h3>
         <button onclick="copyObsLink('{{tlist.name}}')">List OBS Source</button>
         <ul>
             {% for todo in tlist.items.all %}
@@ -33,8 +38,19 @@
                 <li>This list is empty!</li>
             {% endfor %}
         </ul>
-        <button>Add new Todo</button>
+        <button>Add new Todo</button> <br>
     {% endfor %}
-    <button>Create new List</button>
+    <button command="show-modal" commandfor="list-create-dialog">Create new List</button>
+
+
+    <dialog id="list-create-dialog">
+        <form action="{% url 'todos:createList' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="title" id="title">
+            <label for="title">List Title</label>
+
+            <button type="submit">Create</button>
+        </form>
+    </dialog>
 </body>
 </html>
