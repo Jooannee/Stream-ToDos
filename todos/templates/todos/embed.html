@@ -5,16 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Embedded Todolist: {{list.name}}</title>
     {% load static %}
-    <link rel="stylesheet" href="{%static 'todos/style.css'%}">
+    <link rel="stylesheet" href="{%static 'todos/embed.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{%static 'todos/embed.js' %}"></script>
 </head>
 <body>
-    <h2>{{list.name}}</h2>
-    <ul>
-        {% for item in list.items.all %}
-            <li>{{item.chat_index}}. {{item.creator_name}} - {{item.title}}</li>
-        {% empty %}
-            <li>No todos in this list</li>
-        {% endfor %}
-    </ul> 
+    <div class="todo-widget">
+        <header class="widget-header">
+            <h1 class="widget-title">{{list.name}}</h1>
+            <span class="widget-count" id="widget-count">0</span>
+        </header>
+
+        <div class="list-view" id="list-view">
+            <div class="list-container" id="list-container">
+                {% for item in list.items.all %}
+                    {% if item.status == 'pending' %}
+                    <div class="todo-item" data-id="{{item.id}}" data-status="{{item.status}}">
+                        <div class="todo-index">
+                            {{item.chat_index}}
+                        </div>
+                        <div class="todo-content">
+                            <span class="todo-creator">{{item.creator_name}}</span>
+                            <span class="todo-title">{{item.title}}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% empty %}
+                <div class="empty-state">No tasks! Add one using twitch chat.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </body>
 </html>
