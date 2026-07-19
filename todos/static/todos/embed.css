@@ -154,6 +154,12 @@ body {
     padding: 0px 8px;
 }
 
+.item-completed {
+    text-decoration: line-through;
+    text-decoration-thickness: 3px;
+    text-decoration-color: var(--dark-green);
+}
+
 .empty-state {
     display: flex;
     justify-content: center;

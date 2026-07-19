@@ -18,9 +18,8 @@
 
         <div class="list-view" id="list-view">
             <div class="list-container" id="list-container">
-                {% for item in list.items.all %}
-                    {% if item.status == 'pending' %}
-                    <div class="todo-item" data-id="{{item.id}}" data-status="{{item.status}}">
+                {% for item in list.active_items %}
+                    <div class="todo-item item-{{item.status}}">
                         <div class="todo-index">
                             {{item.chat_index}}
                         </div>
@@ -29,7 +28,6 @@
                             <span class="todo-title">{{item.title}}</span>
                         </div>
                     </div>
-                    {% endif %}
                 {% empty %}
                 <div class="empty-state">No tasks! Add one using twitch chat.</div>
                 {% endfor %}

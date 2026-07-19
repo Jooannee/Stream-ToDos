@@ -35,6 +35,8 @@ class TodoList(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.streamer.twitch_username})"
+    def active_items(self):
+        return self.items.filter(status__in=["pending", "completed"])
 
 
 class TodoItem(models.Model):
