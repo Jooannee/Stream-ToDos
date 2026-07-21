@@ -19,6 +19,45 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BOT_ID = os.getenv("BOT_ID")
 OWNER_ID = os.getenv("OWNER_ID")
 
+
+@sync_to_async(thread_sensitive=True)
+def fetch_channels():
+    return list(SocialToken.objects.select_related('account').all())
+@sync_to_async(thread_sensitive=True)
+def fetch_profile(streamerName:str) -> StreamerProfile:
+    return StreamerProfile.objects.get(twitch_username=streamerName)
+@sync_to_async(thread_sensitive=True)
+def fetch_profile_lists(profile:StreamerProfile) -> tuple[TodoList, TodoList]:
+    return profile.active_chat_list, profile.active_streamer_list
+@sync_to_async(thread_sensitive=True)
+def fetch_profile_limit(profile:StreamerProfile) -> int:
+    return profile.max_viewer_todos
+@sync_to_async
+def fetch_list_items(todo_list:TodoList, filter:dict=None) -> list[TodoItem]:
+    if not filter:
+        return list(todo_list.items.all())
+    return list(todo_list.items.filter(**filter))
+@sync_to_async
+def fetch_single_item(todo_list:TodoList, filter:dict) -> TodoItem:
+    try:
+        return todo_list.items.get(**filter)
+    except (TodoItem.DoesNotExist, TodoItem.MultipleObjectsReturned):
+        return None
+
+@sync_to_async
+def format_list_items(items: list[TodoItem]) -> str:
+    return "    ".join(f"{item.chat_index}. {item.title};" for item in items)
+
+@sync_to_async(thread_sensitive=True)
+def save_done(item):
+    item.status = "completed"
+    item.save()
+@sync_to_async(thread_sensitive=True)
+def save_new_item(todo_list, creator_name, title):
+    newItem = TodoItem(todo_list=todo_list, creator_name=creator_name, title=title)
+    return newItem.save()
+
+
 class Bot(commands.AutoBot):
     def __init__(self, *, subs: list[eventsub.SubscriptionPayload]) -> None:
 
@@ -42,43 +81,6 @@ class Bot(commands.AutoBot):
 
     async def event_ready(self) -> None:
         LOGGER.info("Successfully logged in as: %s", self.bot_id)
-
-@sync_to_async(thread_sensitive=True)
-def fetch_profile(streamerName:str) -> StreamerProfile:
-    return StreamerProfile.objects.get(twitch_username=streamerName)
-@sync_to_async(thread_sensitive=True)
-def fetch_profile_lists(profile:StreamerProfile) -> tuple[TodoList, TodoList]:
-    return profile.active_chat_list, profile.active_streamer_list
-@sync_to_async(thread_sensitive=True)
-def fetch_profile_limit(profile:StreamerProfile) -> int:
-    return profile.max_viewer_todos
-@sync_to_async
-def fetch_list_items(todo_list:TodoList, filter:dict=None) -> list[TodoItem]:
-    if not filter:
-        return list(todo_list.items.all())
-    return list(todo_list.items.filter(**filter))
-@sync_to_async
-def fetch_single_item(todo_list:TodoList, filter:dict) -> TodoItem:
-    try:
-        return todo_list.items.get(**filter)
-    except (TodoItem.DoesNotExist, TodoItem.MultipleObjectsReturned):
-        return None
-
-
-@sync_to_async
-def format_list_items(items: list[TodoItem]) -> str:
-    return "    ".join(f"{item.chat_index}. {item.title};" for item in items)
-
-
-@sync_to_async(thread_sensitive=True)
-def save_done(item):
-    item.status = "completed"
-    item.save()
-@sync_to_async(thread_sensitive=True)
-def save_new_item(todo_list, creator_name, title):
-    newItem = TodoItem(todo_list=todo_list, creator_name=creator_name, title=title)
-    return newItem.save()
-
 
 class funCommands(commands.Component):
     def __init__(self, bot: Bot) -> None:
@@ -149,6 +151,10 @@ class todoCommands(commands.Component):
         if not index:
             await ctx.reply("Add the index of the todo you want to mark as complete!")
             return
+        try: index = int(index)
+        except:
+            await ctx.reply("Please pass the index of the todo you would like to mark as complete")
+            return
         item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index})
         if not item:
             await ctx.reply("I couldn't find that todo!")
@@ -161,11 +167,8 @@ class todoCommands(commands.Component):
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
     subs: list[eventsub.SubscriptionPayload] = []
-    
-    def fetch_channels():
-        return list(SocialToken.objects.select_related('account').all())
 
-    channels = await sync_to_async(fetch_channels, thread_sensitive=True)()
+    channels = await fetch_channels()
     for channel in channels:
         tokens.append((channel.token, channel.token_secret))
         if channel.account.uid == BOT_ID:
