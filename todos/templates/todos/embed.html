@@ -10,7 +10,7 @@
     <script src="{%static 'todos/embed.js' %}"></script>
 </head>
 <body>
-    <div class="todo-widget">
+    <div class="todo-widget" id="todo-widget" data-user-id="{{streamer.obs_token}}">
         <header class="widget-header">
             <h1 class="widget-title">{{list.name}}</h1>
             <span class="widget-count" id="widget-count">0</span>
@@ -18,19 +18,7 @@
 
         <div class="list-view" id="list-view">
             <div class="list-container" id="list-container">
-                {% for item in list.active_items %}
-                    <div class="todo-item item-{{item.status}}">
-                        <div class="todo-index">
-                            {{item.chat_index}}
-                        </div>
-                        <div class="todo-content">
-                            <span class="todo-creator">{{item.creator_name}}</span>
-                            <span class="todo-title">{{item.title}}</span>
-                        </div>
-                    </div>
-                {% empty %}
-                <div class="empty-state" id="empty-state">No tasks! Add one using twitch chat (!todos add).</div>
-                {% endfor %}
+                {% include "todos/todo_items_partial.html" %}
             </div>
         </div>
     </div>

@@ -19,16 +19,49 @@ document.addEventListener('DOMContentLoaded', () => {
     function scrollToBottom(){
         var maxScroll = $listView[0].scrollHeight-$listView[0].clientHeight;
         $listView.stop().animate({scrollTop:maxScroll}, getScrollDuration(maxScroll), 'linear', ()=> { 
-        setTimeout(scrollToTop, pauseDuration)
+        setTimeout(scrollToTop, pauseDuration);
         });
     }
 
     function updateCounter() {
-        const emptyDiv = document.getElementById("empty-state")
+        const emptyDiv = document.getElementById("empty-state");
         if (emptyDiv!==null){currCount=0}
         else{currCount = listContainer.childElementCount}
-        widgetCount.innerHTML = currCount
+        widgetCount.innerHTML = currCount;
     }
+
+    //Websocket Things c:
+    const wsScheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const urlArgs = window.location.pathname.split("/");
+    const wsUrl = wsScheme+window.location.host+"/ws/todo/"+urlArgs[2]+"/"+urlArgs[3]+"/";
+
+    function connectSocket() {
+        const socket = new WebSocket(wsUrl);
+        console.log("Websocket connected")
+
+        socket.onmessage = function(e) {
+            try {
+                const data = JSON.parse(e.data);
+                if (data.type === "todo_update" && data.html !== undefined) {
+                    listContainer.innerHTML = data.html;
+                    updateCounter()
+                }
+            } catch (err) {
+                console.error("Error processing websocket message: ", err);
+            }
+        };
+
+        socket.onclose = function(e) {
+            console.warn("Websocket closed. Attempting reconnect in 3 Seconds: ", e.reason);
+            setTimeout(connectSocket, 3000);
+        };
+
+        socket.onerror = function(err) {
+            console.error("Websocket error: ", err);
+        }
+    }
+    connectSocket();
+
 
     //Start scrolling cycle on page load
     scrollToBottom()

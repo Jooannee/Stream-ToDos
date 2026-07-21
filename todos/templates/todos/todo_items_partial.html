@@ -1,0 +1,13 @@
+{% for item in list.active_items %}
+    <div class="todo-item item-{{item.status}}">
+        <div class="todo-index">
+            {{item.chat_index}}
+        </div>
+        <div class="todo-content">
+            <span class="todo-creator">{{item.creator_name}}</span>
+            <span class="todo-title">{{item.title}}</span>
+        </div>
+    </div>
+{% empty %}
+<div class="empty-state" id="empty-state">No tasks! Add one using twitch chat (!todos add).</div>
+{% endfor %}
