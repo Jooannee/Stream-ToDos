@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'daphne',
     'channels',
-    'todos',
+    'todos.apps.TodosConfig',
 
     'django.contrib.auth',
     'django.contrib.messages',
@@ -173,6 +173,12 @@ LOGOUT_REDIRECT_URL = '/'
 # Django Channels Configuration; TODO: CHANGE FOR DEPLOYMENT (REDIS)
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [{
+                'address': 'redis://127.0.0.1:6379/0',
+                'socket_timeout': None,
+            }],
+        }
     },
 }

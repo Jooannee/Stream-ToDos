@@ -34,7 +34,7 @@ class TodoList(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} ({self.streamer.twitch_username})"
+        return "".join(self.name.lower().split())
     def active_items(self):
         return self.items.filter(status__in=["pending", "completed"])
 

@@ -9,7 +9,6 @@ from .models import TodoItem, TodoList, StreamerProfile
 @receiver(post_save, sender=TodoItem)
 @receiver(post_delete, sender=TodoItem)
 def todo_item_change(sender, instance, **kwargs):
-    print("item change signal fire")
     channel_layer = get_channel_layer()
     if not channel_layer:
         return
