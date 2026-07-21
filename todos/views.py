@@ -19,7 +19,6 @@ def dashboard(request):
     if hasattr(request.user, "profile"):
         streamer = request.user.profile
         lists = TodoList.objects.filter(streamer=streamer)
-        base_url = request.build_absolute_uri("/")
         
     # If it doesn't redirect to tutorial (Likely first launch)
     else:
@@ -28,7 +27,6 @@ def dashboard(request):
     context = {
         'streamer': streamer,
         'lists': lists,
-        'base_url': base_url,
     }
     return render(request, 'todos/dashboard.html', context)
 
@@ -94,20 +92,16 @@ def createList(request):
 
     list_title = request.POST.get("title", "")
     if not list_title:
-        base_url = request.build_absolute_uri("/")
         context = {
         'streamer': streamer,
         'lists': lists,
-        'base_url': base_url,
         'error_message': "You didn't supply a title for the list!"
         }
         return render(request, 'todos/dashboard.html', context)
     if list_title in list_names:
-        base_url = request.build_absolute_uri("/")
         context = {
         'streamer': streamer,
         'lists': lists,
-        'base_url': base_url,
         'error_message': "You already have a list with that name!"
         }
         return render(request, 'todos/dashboard.html', context)
@@ -161,11 +155,9 @@ def createTodo(request, todo_list:str):
 
     todo_title = request.POST.get("title", "")
     if not todo_title:
-        base_url = request.build_absolute_uri("/")
         context = {
         'streamer': streamer,
         'lists': lists,
-        'base_url': base_url,
         'error_message': "You didn't supply a title for the todo!"
         }
         return render(request, 'todos/dashboard.html', context)

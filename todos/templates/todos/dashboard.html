@@ -10,7 +10,7 @@
 </head>
 <script type="text/javascript">
     function copyObsLink(todoList) {
-        let finalLink = "{{base_url}}"+"embed/"+"{{streamer.obs_token}}"+"/"+todoList;
+        let finalLink = window.location.protocol+"//"+window.location.host+"/embed/"+"{{streamer.obs_token}}"+"/"+todoList;
         navigator.clipboard.writeText(finalLink);
     }
 
