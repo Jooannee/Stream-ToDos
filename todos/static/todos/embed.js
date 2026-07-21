@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCounter() {
-        currCount = listContainer.childElementCount
+        const emptyDiv = document.getElementById("empty-state")
+        if (emptyDiv!==null){currCount=0}
+        else{currCount = listContainer.childElementCount}
         widgetCount.innerHTML = currCount
     }
 
