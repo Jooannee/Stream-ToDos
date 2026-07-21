@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'todos',
 
     'django.contrib.auth',
@@ -87,6 +89,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 WSGI_APPLICATION = 'streamToDo.wsgi.application'
+ASGI_APPLICATION = 'streamToDo.asgi.application'
 
 
 # Database
@@ -166,3 +169,10 @@ SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapt
 # Redirect configurations
 LOGIN_REDIRECT_URL = '/dashboard'
 LOGOUT_REDIRECT_URL = '/'
+
+# Django Channels Configuration; TODO: CHANGE FOR DEPLOYMENT (REDIS)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
