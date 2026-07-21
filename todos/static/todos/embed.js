@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const distance = Math.abs(currentScrolltop-targetScrolltop);
         return distance/scrollSpeed;
     }
-
     function scrollToTop(){
         $listView.stop().animate({scrollTop:0}, getScrollDuration(0), 'linear', () => { 
         setTimeout(scrollToBottom, pauseDuration);
@@ -24,5 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateCounter() {
+        currCount = listContainer.childElementCount
+        widgetCount.innerHTML = currCount
+    }
+
+    //Start scrolling cycle on page load
     scrollToBottom()
+    //Update todo counter on page load
+    updateCounter()
 })
