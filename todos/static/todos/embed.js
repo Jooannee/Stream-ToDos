@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCounter() {
         const emptyDiv = document.getElementById("empty-state");
-        if (emptyDiv!==null){currCount=0}
-        else{currCount = listContainer.childElementCount}
+        if (emptyDiv){currCount=0}
+        else{currCount = document.getElementsByClassName("item-pending").length}
         widgetCount.innerHTML = currCount;
     }
 
