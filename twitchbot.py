@@ -10,6 +10,7 @@ django.setup()
 from todos.models import StreamerProfile, TodoItem, TodoList
 from allauth.socialaccount.models import SocialToken
 from asgiref.sync import sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 load_dotenv()
 
@@ -19,6 +20,7 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BOT_ID = os.getenv("BOT_ID")
 OWNER_ID = os.getenv("OWNER_ID")
 
+_bot_instance = None
 
 @sync_to_async(thread_sensitive=True)
 def fetch_channels():
@@ -163,6 +165,32 @@ class todoCommands(commands.Component):
         await save_done(item)
         await ctx.reply("Another one down, nice work!")
 
+# Seems like this won't work because of cross-process stuff...
+# class BotConsumer(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         await self.channel_layer.group_add(
+#             "user_register",
+#             self.channel_name
+#         )
+#         await self.accept()
+#     async def disconnect(self, code):
+#         await self.channel_layer.group_discard(
+#             "user_register",
+#             self.channel_name
+#         )
+#     async def bot_user_register(self, event):
+#         print("reached2")
+#         global _bot_instance
+#         twitch_uid = event["twitch_uid"]
+
+#         _bot_instance.add_token(event["token"], event["refresh"])
+#         if not twitch_uid or twitch_uid == BOT_ID:
+#             return
+#         resp = _bot_instance.multi_subscribe([eventsub.ChatMessageSubscription(broadcaster_user_id=event["twitch_uid"], user_id=BOT_ID)])
+#         if resp.errors:
+#             LOGGER.warning(f"Failed to subscribe to: {twitch_uid}. {resp.errors}")
+#             return
+#         LOGGER.info(f"Succesfully subscribed to: {twitch_uid}")
 
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
@@ -184,6 +212,8 @@ def main() -> None:
         tokens, subs = await start_db()
 
         async with Bot(subs=subs) as bot:
+            global _bot_instance
+            _bot_instance = bot
             for pair in tokens:
                 await bot.add_token(*pair)
             
@@ -193,6 +223,8 @@ def main() -> None:
         asyncio.run(runner())
     except KeyboardInterrupt:
         LOGGER.warning("Keyboardinterrupt, Shutting down Bot")
+    finally:
+        _bot_instance = None
 
 if __name__ == "__main__":
     main()

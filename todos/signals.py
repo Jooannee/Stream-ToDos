@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from .models import TodoItem, TodoList, StreamerProfile
+from allauth.socialaccount.models import SocialToken
 
 @receiver(post_save, sender=TodoItem)
 @receiver(post_delete, sender=TodoItem)
@@ -49,3 +50,28 @@ def streamer_profile_change(sender, instance, **kwargs):
                 "type": "todo_update"
             }
         )
+
+
+@receiver(post_save, sender=SocialToken)
+def token_changed(sender, instance:SocialToken, created:bool, **kwargs):
+    if not created:
+        return
+    
+    channel_layer = get_channel_layer()
+    if not channel_layer:
+        return
+    
+    token = instance.token
+    refresh = instance.token_secret
+    twitch_uid = instance.account.uid
+
+    async_to_sync(channel_layer.group_send)(
+        "user_register",
+        {
+            "type": "user_register",
+            "token": token,
+            "refresh": refresh,
+            "twitch_uid": twitch_uid
+        }
+    )
+    print("reached1")
