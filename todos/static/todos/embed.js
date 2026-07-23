@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const listContainer = document.getElementById("list-container");
     const $listView = $("#list-view");
     const widgetCount = document.getElementById("widget-count");
+    const widgetTitle = document.getElementById("widget-title");
 
     const scrollSpeed = 0.1; //Pixels per ms
     const pauseDuration = 10000; //in ms
@@ -44,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = JSON.parse(e.data);
                 if (data.type === "todo_update" && data.html !== undefined) {
                     listContainer.innerHTML = data.html;
+                    widgetTitle.innerHTML = data.todo_title;
+                    
                     updateCounter()
                 }
             } catch (err) {

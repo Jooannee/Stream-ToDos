@@ -24,9 +24,12 @@ class TodoConsumer(AsyncWebsocketConsumer):
         )
 
     async def todo_update(self, event):
+        title = await self.get_updated_title()
+        title = title if title else "???"
         html = await self.get_updated_html()
         await self.send(text_data=json.dumps({
             "type": "todo_update",
+            "todo_title": title,
             "html": html
         }))
     
@@ -48,3 +51,20 @@ class TodoConsumer(AsyncWebsocketConsumer):
         
         except Exception as e:
             return f"<div class=\"empty state\"> Error loading list: {str(e)}<div>"
+    
+    @database_sync_to_async
+    def get_updated_title(self):
+            try:
+                streamer = StreamerProfile.objects.get(obs_token=self.user_id)
+                if self.todo_list == "chatlist":
+                    embed_list = streamer.active_chat_list
+                elif self.todo_list == "streamerlist":
+                    embed_list = streamer.active_streamer_list
+                else:
+                    embed_list = TodoList.objects.get(streamer=streamer, name=self.todo_list)
+                
+                if not embed_list:
+                    return
+            except:
+                return
+            return embed_list.name
