@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -23,9 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-hd)ln^^e(t=a2ym=(dhwj&x)&%slf5e$&tncf&1cw)rm^7o+uq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-hd)ln^^e(t=a2ym=(dhwj&x)&%slf5e$&tncf&1cw)rm^7o+uq')
 
-ALLOWED_HOSTS = []
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1')
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -98,11 +103,11 @@ ASGI_APPLICATION = 'streamToDo.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'collabtodo',
-        'USER': 'todo_user',
-        'PASSWORD': 'VYLXDl%%@JthM4JJHjZl',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'collabtodo'),
+        'USER': os.getenv('DB_USER', 'todo_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -142,6 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_PROVIDERS = {
@@ -176,7 +182,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             'hosts': [{
-                'address': 'redis://127.0.0.1:6379/0',
+                'address': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0'),
                 'socket_timeout': None,
             }],
         }
