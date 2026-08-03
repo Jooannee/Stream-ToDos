@@ -29,6 +29,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-hd)ln^^e(t=a2ym=(dhwj&x)&%
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+csrf_trusted_origins_env = os.getenv('CSRF_TRUSTED_ORIGINS')
+if csrf_trusted_origins_env:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_trusted_origins_env.split(',') if origin]
+else:
+    CSRF_TRUSTED_ORIGINS = [f"https://{host.strip()}" for host in ALLOWED_HOSTS if host]
+
 
 
 # Application definition
