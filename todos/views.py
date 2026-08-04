@@ -179,3 +179,24 @@ def embed(request, user_id:uuid, todo_list:str):
     if not embed_list: raise Http404("Requested list does not exist")
 
     return render(request, 'todos/embed.html', {"list":embed_list, "streamer": streamer})
+
+@login_required
+def settings(request):
+    return render(request, 'todos/settings.html')
+@login_required
+@require_POST
+def changeSettings(request):
+    tta = request.POST.get("tta", "")
+    max_todos = request.POST.get("max_viewer_todos", "")
+
+    try:
+        tta = int(tta)
+        max_todos = int(max_todos)
+    except ValueError:
+        return render(request, 'todos/settings.html', {"error_message": "Please enter numbers"})
+
+    streamer = request.user.profile
+    streamer.time_to_archive = tta
+    streamer.max_viewer_todos = max_todos
+    streamer.save()
+    return HttpResponseRedirect(reverse("todos:dashboard"))
