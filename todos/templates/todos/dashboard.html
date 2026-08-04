@@ -6,15 +6,13 @@
     <title>Stream ToDos Dashboard</title>
 
     {% load static %}
-    <link rel="stylesheet" href="{%static 'todos/style.css'%}">
+    <script src="{%static 'todos/dash.js'%}"></script>
 </head>
 <script type="text/javascript">
     function copyObsLink(todoList) {
         let finalLink = window.location.protocol+"//"+window.location.host+"/embed/"+"{{streamer.obs_token}}"+"/"+todoList;
         navigator.clipboard.writeText(finalLink);
     }
-
-
 </script>
 
 
@@ -24,13 +22,13 @@
     {% if error_message %}
         <strong>{{error_message}}</strong> <br>
     {% endif %}
-    <button onclick="copyObsLink('chatlist')">Chatlist OBS Source</button>
-    <button onclick="copyObsLink('streamerlist')">Streamerlist OBS Source</button>
+    <button onclick="copyObsLink('chatlist')">Copy Chatlist OBS Source</button>
+    <button onclick="copyObsLink('streamerlist')">Copy Streamerlist OBS Source</button>
 
     <h2>Current Lists - {{ lists|length }}</h2>
     {% for tlist in lists %}
         <h3 style="display: inline;">{{tlist.name}} - {{tlist.items.all|length}} item{{tlist.items.all|pluralize}}</h3>
-        <button onclick="copyObsLink('{{tlist.name}}')">List OBS Source</button> <br>
+        <button onclick="copyObsLink('{{tlist.name}}')">Copy List OBS Source</button> <br>
         <form action="{% url 'todos:deleteList' %}" method="post" style="display: inline;">
             {% csrf_token %}
             <input type="hidden" name="todo_list" value="{{tlist.name}}">
@@ -48,7 +46,7 @@
         </form>
         <ul>
             {% for todo in tlist.items.all %}
-                <li>{{todo.creator_name}} - {{todo.title}}</li>
+                <li style="display: inline;">{{todo.creator_name}} - {{todo.title}}</li> <button style="display: inline;" onclick="itemMarkDone('{{tlist.name}}', '{{todo.title}}')">Mark done</button> <br>
             {% empty %}
                 <li>This list is empty!</li>
             {% endfor %}
