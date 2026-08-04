@@ -10,7 +10,7 @@ class TodoItemInline(admin.TabularInline):
 
 class TodoListAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {"fields": ["streamer", "name"]})
+        (None, {"fields": ["streamer", "name", "safe_name"]})
     ]
     inlines = [TodoItemInline]
 

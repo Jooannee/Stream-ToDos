@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+</head>
+<body>
+
+    {% if error_message %}
+    <strong>{{error_message}}</strong>
+    {% endif %}
+
+    <form action="{% url 'todos:changeSettings' %}" method="post">
+        {% csrf_token %}
+        <input type="number" name="tta" id="tta" value="{{user.profile.time_to_archive}}">
+        <label for="tta">Time for an item to be labeled done, for it to be archived (in hours)</label> <br>
+        <input type="number" name="max_viewer_todos" id="max_viewer_todos" value="{{user.profile.max_viewer_todos}}">
+        <label for="max_viewer_todos">Maximum todos per viewer. 0 for infinite</label> <br>
+
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
