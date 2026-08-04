@@ -3,7 +3,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.template.loader import render_to_string
-from todos.models import StreamerProfile, TodoList
+from todos.models import StreamerProfile, TodoList, TodoItem
 
 class TodoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -68,3 +68,40 @@ class TodoConsumer(AsyncWebsocketConsumer):
             except:
                 return
             return embed_list.name
+
+class DashConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope["user"]
+        if str(user) == "AnonymousUser":
+            await self.close()
+        else:
+            await self.accept()
+    async def disconnect(self, code):
+        pass
+
+    async def receive(self, text_data = None, bytes_data = None):
+        text_data_json = json.loads(text_data)
+        print(text_data_json)
+        match text_data_json["type"]:
+            case "mark_done":
+                print("here")
+                listName = text_data_json["list"]
+                itemName = text_data_json["item"]
+                await self.set_item_complete(str(self.scope["user"]), listName, itemName)
+
+            case _:
+                pass
+
+    @database_sync_to_async
+    def set_item_complete(self, userName, listName, itemName):
+        print("here3")
+        try:
+            print("here2")
+            streamer = StreamerProfile.objects.get(twitch_username=userName)
+            tList = TodoList.objects.get(streamer=streamer, name=listName)
+            tItem = TodoItem.objects.get(todo_list=tList, title=itemName)
+
+            tItem.status = "completed"
+            tItem.save()
+        except Exception as e:
+            print(e)
