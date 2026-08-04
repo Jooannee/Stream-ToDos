@@ -1,4 +1,4 @@
-import uuid
+import uuid, re
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -32,6 +32,7 @@ class StreamerProfile(models.Model):
 class TodoList(models.Model):
     streamer = models.ForeignKey(StreamerProfile, on_delete=models.CASCADE, related_name='custom_lists')
     name = models.CharField(max_length=100)
+    safe_name = models.CharField(max_length=100, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -46,6 +47,13 @@ class TodoList(models.Model):
             item.save()
 
         return self.items.filter(status__in=["pending", "completed"])
+
+    def save(self, *args, **kwargs):
+        if not self.safe_name:
+            self.safe_name = re.sub("[^0-9A-Za-z.-]", "-", self.name)
+        super().save(*args, **kwargs)
+        return
+        
 
 
 class TodoItem(models.Model):

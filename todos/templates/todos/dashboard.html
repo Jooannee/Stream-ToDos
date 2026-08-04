@@ -29,7 +29,7 @@
     <h2>Current Lists - {{ lists|length }}</h2>
     {% for tlist in lists %}
         <h3 style="display: inline;">{{tlist.name}} - {{tlist.active_items|length}} item{{tlist.items.all|pluralize}}</h3>
-        <button onclick="copyObsLink('{{tlist.name}}')">Copy List OBS Source</button> <br>
+        <button onclick="copyObsLink('{{tlist.safe_name}}')">Copy List OBS Source</button> <br>
         <form action="{% url 'todos:deleteList' %}" method="post" style="display: inline;">
             {% csrf_token %}
             <input type="hidden" name="todo_list" value="{{tlist.name}}">

@@ -175,7 +175,7 @@ def embed(request, user_id:uuid, todo_list:str):
     elif todo_list == "streamerlist":
         embed_list = streamer.active_streamer_list
     else:
-        embed_list = get_object_or_404(TodoList, streamer=streamer, name=todo_list)
+        embed_list = get_object_or_404(TodoList, streamer=streamer, safe_name=todo_list)
     if not embed_list: raise Http404("Requested list does not exist")
 
     return render(request, 'todos/embed.html', {"list":embed_list, "streamer": streamer})
