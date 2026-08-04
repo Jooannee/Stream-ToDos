@@ -1,0 +1,20 @@
+:root {
+    /* Basic Color stuff */
+    --dark-purple:#2D1B33;
+    --mid-pink:#7B5292;
+    --light-pink:#E0BBE4;
+    --cream-yellow:#FFF7DA;
+    --dark-green:#083D41;
+
+    --text-white: #ffffff;
+}
+
+.todo-item {
+    margin-bottom: 10px;
+}
+
+.todo-item-completed {
+    text-decoration: line-through;
+    text-decoration-thickness: 3px;
+    text-decoration-color: var(--dark-green);
+}
