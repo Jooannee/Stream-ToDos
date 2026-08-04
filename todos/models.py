@@ -8,6 +8,7 @@ class StreamerProfile(models.Model):
     twitch_username = models.CharField(max_length=100, unique=True)
     obs_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     max_viewer_todos = models.IntegerField(default=3)
+    time_to_archive = models.IntegerField(default=24) # Time an item is marked as done until it's automatically archived (in hours)
     
     active_streamer_list = models.ForeignKey(
         'TodoList', 
@@ -35,7 +36,15 @@ class TodoList(models.Model):
 
     def __str__(self):
         return "".join(self.name.lower().split())
+
+    # Returns all items that are pending or completed. Also the "entrypoint"-ish for the automatic archiving of items
     def active_items(self):
+        cutoff = timezone.now()-timezone.timedelta(hours=self.streamer.time_to_archive)
+        expired_items = self.items.filter(status="completed", completed_at__lte=cutoff)
+        for item in expired_items:
+            item.status = "archived"
+            item.save()
+
         return self.items.filter(status__in=["pending", "completed"])
 
 
