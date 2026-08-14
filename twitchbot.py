@@ -116,14 +116,17 @@ class todoCommands(commands.Component):
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
         chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
-        if limit !=0 and len(chatterItems) >= limit:
+        if limit !=0 and len(chatterItems) >= limit and ctx.chatter.name != ctx.broadcaster.name:
             await ctx.reply("You've reached the streamers limit for todos from a single chatter! Get something done before adding more!")
             return
         if not title:
             await ctx.reply("Please add a title for your todo!")
             return
 
-        chat_index = await save_new_item(chat_list, ctx.chatter.name, title)
+        if ctx.chatter.name == ctx.broadcaster.name:
+            chat_index = await save_new_item(streamer_list, ctx.chatter.name, title)
+        else:
+            chat_index = await save_new_item(chat_list, ctx.chatter.name, title)
         await ctx.reply(f"Your todo has been added to the list! Use \"!todos done {chat_index}\" later on to mark it as done!")
 
     @todos.command(name="list", aliases=["all", "mine", "my"])
@@ -157,11 +160,15 @@ class todoCommands(commands.Component):
         except:
             await ctx.reply("Please pass the index of the todo you would like to mark as complete")
             return
-        item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index})
+
+        if ctx.chatter.name == ctx.broadcaster.name:
+            item = await fetch_single_item(streamer_list, {"todo_list":streamer_list, "creator_name":ctx.chatter.name, "chat_index":index, "status":"pending"})
+        else:
+            item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index, "status":"pending"})
+
         if not item:
             await ctx.reply("I couldn't find that todo!")
             return
-
         await save_done(item)
         await ctx.reply("Another one down, nice work!")
 
