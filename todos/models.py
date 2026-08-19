@@ -2,6 +2,7 @@ import uuid, re
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from colorfield.fields import ColorField
 
 class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -88,3 +89,26 @@ class TodoItem(models.Model):
 
     def __str__(self):
         return f"[{self.todo_list.name}] {self.title}"
+
+class ColorTheme(models.Model):
+    name = models.CharField(max_length=100, default="", blank=True)
+    public = models.BooleanField(default=False)
+    streamer = models.ForeignKey(StreamerProfile, on_delete=models.CASCADE, related_name='themes')
+
+
+    header_gradient = models.BooleanField(default=True)
+    header_grad_col1 = ColorField(format="hex")
+    header_grad_col2 = ColorField(format="hex")
+    header_title_col = ColorField(format="hex")
+
+    counter_bg_col = ColorField(format="hex")
+    counter_font_col = ColorField(format="hex")
+
+    borders_col = ColorField(format="hex")
+
+    item_bg_col = ColorField(format="hex")
+    item_dec_col = ColorField(format="hex")
+    item_index_font_col = ColorField(format="hex")
+    item_author_font_col = ColorField(format="hex")
+    item_title_font_col = ColorField(format="hex")
+    item_strike_col = ColorField(format="hex")

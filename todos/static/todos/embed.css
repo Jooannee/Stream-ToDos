@@ -9,8 +9,7 @@
     --borders: #E0BBE4;
     
     --item-bg: #2D1B33;
-    --item-bar-left: #7B5292;
-    --item-index-bg: #7B5292;
+    --item-decorations: #7B5292;
     --item-index-font: #FFF7DA;
     --item-author-font: #E0BBE4;
     --item-title-font: #ffffff;
@@ -110,14 +109,14 @@ body {
     align-items: center;
     background: var(--item-bg);
     border: 1px solid var(--borders);
-    border-left: 6px solid var(--item-bar-left);
+    border-left: 6px solid var(--item-decorations);
     border-radius: 10px;
     padding: 14px 18px;
     position: relative;
     overflow: hidden;
 }
 .todo-index {
-    background-color: var(--item-index-bg);
+    background-color: var(--item-decorations);
     color: var(--item-index-font);
     font-size: 1rem;
     font-weight: 800;
