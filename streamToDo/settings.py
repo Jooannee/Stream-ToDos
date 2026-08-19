@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'channels',
     'todos.apps.TodosConfig',
 
+    'colorfield',
+
     'django.contrib.auth',
     'django.contrib.messages',
     'django.contrib.sites',
