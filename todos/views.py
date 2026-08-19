@@ -178,7 +178,9 @@ def embed(request, user_id:uuid, todo_list:str):
         embed_list = get_object_or_404(TodoList, streamer=streamer, safe_name=todo_list)
     if not embed_list: raise Http404("Requested list does not exist")
 
-    return render(request, 'todos/embed.html', {"list":embed_list, "streamer": streamer})
+    theme = streamer.active_theme
+
+    return render(request, 'todos/embed.html', {"list":embed_list, "streamer": streamer, "theme":theme})
 
 @login_required
 def settings(request):

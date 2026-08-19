@@ -23,4 +23,60 @@
         </div>
     </div>
 </body>
+
+{% if theme %}
+    <style>
+        :root {
+            --header-gradient-1: {{theme.header_grad_col1}};
+            --header-gradient-2: {{theme.header_grad_col2}};
+            --title-font: {{theme.header_title_col}};
+            --counter-bg: {{theme.counter_bg_col}};
+            --counter-font: {{theme.counter_font_col}};
+            
+            --borders: {{theme.borders_col}};
+            
+            --item-bg: {{theme.item_bg_col}};
+            --item-decorations: {{theme.item_dec_col}};
+            --item-index-font: {{theme.index_font_col}};
+            --item-author-font: {{theme.author_font_col}};
+            --item-title-font: {{theme.title_font_col}};
+            --item-strike-through: {{theme.strike_col}};
+        }
+    </style>
+    {% if theme.header_gradient %}
+        <style>
+                .widget-header {background: linear-gradient(135deg, var(--header-gradient-1), var(--header-gradient-2));}
+        </style>
+    {% else %}
+        <style>
+            .widget-header {
+                background-color: var(--header-gradient-1);
+            }
+        </style>
+    {% endif %}
+{% else %}
+    <style>
+        :root {
+        --header-gradient-1: #2D1B33;
+        --header-gradient-2: #7B5292;
+        --title-font: #FFF7DA;
+        --counter-bg: #FFF7DA;
+        --counter-font: #2D1B33;
+        
+        --borders: #E0BBE4;
+        
+        --item-bg: #2D1B33;
+        --item-decorations: #7B5292;
+        --item-index-font: #FFF7DA;
+        --item-author-font: #E0BBE4;
+        --item-title-font: #ffffff;
+        --item-strike-through: #083D41;
+    }
+
+    .widget-header {
+        background: linear-gradient(135deg, var(--header-gradient-1), var(--header-gradient-2));
+    }
+    </style>
+{% endif %}
+
 </html>
