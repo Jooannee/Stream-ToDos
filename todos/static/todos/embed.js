@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCounter()
 
     //Show chat hint only if on chatlist url
-    if (String(urlArgs[3]) !== "chatlist") {emptyDiv.style.display = "none";}
-    else {emptyDiv.style.display = "flex"}
+    if (emptyDiv){
+        if (String(urlArgs[3]) !== "chatlist") {emptyDiv.style.display = "none";}
+        else {emptyDiv.style.display = "flex"}
+    }
 })
