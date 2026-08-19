@@ -146,7 +146,6 @@ class todoCommands(commands.Component):
 
     @todos.command(name="done", aliases=["complete", "finish"])
     async def todos_done(self, ctx:commands.Context, index:int=None):
-        """TODO: Make checking for the item more elegant/throw different errors depending on cause"""
         profile = await fetch_profile(ctx.broadcaster.name)
         chat_list, streamer_list = await fetch_profile_lists(profile)
 
@@ -162,12 +161,15 @@ class todoCommands(commands.Component):
             return
 
         if ctx.chatter.name == ctx.broadcaster.name:
-            item = await fetch_single_item(streamer_list, {"todo_list":streamer_list, "creator_name":ctx.chatter.name, "chat_index":index, "status":"pending"})
+            item = await fetch_single_item(streamer_list, {"todo_list":streamer_list, "creator_name":ctx.chatter.name, "chat_index":index, "status__in":["pending", "completed"]})
         else:
-            item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index, "status":"pending"})
+            item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index, "status__in":["pending", "completed"]})
 
         if not item:
             await ctx.reply("I couldn't find that todo!")
+            return
+        if item.status == "completed":
+            await ctx.reply("You've already done that one!")
             return
         await save_done(item)
         await ctx.reply("Another one down, nice work!")
