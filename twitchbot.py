@@ -117,17 +117,17 @@ class todoCommands(commands.Component):
             return
         chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
         if limit !=0 and len(chatterItems) >= limit and ctx.chatter.name != ctx.broadcaster.name:
-            await ctx.reply("You've reached the streamers limit for todos from a single chatter! Get something done before adding more!")
+            await ctx.reply(f"You've reached the streamers limit for todos from a single chatter! Get something done before adding more @{ctx.chatter.name}!")
             return
         if not title:
-            await ctx.reply("Please add a title for your todo!")
+            await ctx.reply(f"Please add a title for your todo @{ctx.chatter.name}!")
             return
 
         if ctx.chatter.name == ctx.broadcaster.name:
             chat_index = await save_new_item(streamer_list, ctx.chatter.name, title)
         else:
             chat_index = await save_new_item(chat_list, ctx.chatter.name, title)
-        await ctx.reply(f"Your todo has been added to the list! Use \"!todos done {chat_index}\" later on to mark it as done!")
+        await ctx.reply(f"Your todo has been added to the list! Use \"!todos done {chat_index}\" later on to mark it as done! Get to work @{ctx.chatter.name}")
 
     @todos.command(name="list", aliases=["all", "mine", "my"])
     async def todos_list(self, ctx:commands.Context):
@@ -139,10 +139,10 @@ class todoCommands(commands.Component):
             return
         chatterItems = await fetch_list_items(chat_list, {"creator_name":ctx.chatter.name, "status":"pending"})
         if not chatterItems:
-            await ctx.reply("You don't currently have any todos!")
+            await ctx.reply(f"You don't currently have any todos @{ctx.chatter.name}!")
             return
         items_formatted = await format_list_items(chatterItems)
-        await ctx.reply(f"These are your current todos: {items_formatted}")
+        await ctx.reply(f"These are your current todos @{ctx.chatter.name}: {items_formatted}")
 
     @todos.command(name="done", aliases=["complete", "finish"])
     async def todos_done(self, ctx:commands.Context, index:int=None):
@@ -153,11 +153,11 @@ class todoCommands(commands.Component):
             await ctx.send("Todos isn't fully setup at the moment! Let your streamer know so they can check it out!")
             return
         if not index:
-            await ctx.reply("Add the index of the todo you want to mark as complete!")
+            await ctx.reply(f"Add the index of the todo you want to mark as complete @{ctx.chatter.name}!")
             return
         try: index = int(index)
         except:
-            await ctx.reply("Please pass the index of the todo you would like to mark as complete")
+            await ctx.reply(f"Please pass the index of the todo you would like to mark as complete @{ctx.chatter.name}!")
             return
 
         if ctx.chatter.name == ctx.broadcaster.name:
@@ -166,13 +166,13 @@ class todoCommands(commands.Component):
             item = await fetch_single_item(chat_list, {"todo_list":chat_list, "creator_name":ctx.chatter.name, "chat_index":index, "status__in":["pending", "completed"]})
 
         if not item:
-            await ctx.reply("I couldn't find that todo!")
+            await ctx.reply(f"I couldn't find that todo @{ctx.chatter.name}!")
             return
         if item.status == "completed":
-            await ctx.reply("You've already done that one!")
+            await ctx.reply(f"You've already done that one @{ctx.chatter.name}!")
             return
         await save_done(item)
-        await ctx.reply("Another one down, nice work!")
+        await ctx.reply(f"Another one down, nice work @{ctx.chatter.name}!")
 
 
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
