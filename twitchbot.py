@@ -96,7 +96,7 @@ class todoCommands(commands.Component):
     def __init__(self, bot:Bot):
         self.bot = bot
 
-    @commands.group(invoke_fallback=True)
+    @commands.group(invoke_fallback=True, aliases=["todo"])
     async def todos(self, ctx:commands.Context) -> None:
         profile = await fetch_profile(ctx.broadcaster.name)
         chat_list, streamer_list = await fetch_profile_lists(profile)
