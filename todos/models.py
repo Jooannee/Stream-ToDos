@@ -10,6 +10,7 @@ class StreamerProfile(models.Model):
     obs_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     max_viewer_todos = models.IntegerField(default=3)
     time_to_archive = models.IntegerField(default=24) # Time an item is marked as done until it's automatically archived (in hours)
+    active_theme = models.ForeignKey('ColorTheme', on_delete=models.SET_NULL, null=True, blank=True)
     
     active_streamer_list = models.ForeignKey(
         'TodoList', 
