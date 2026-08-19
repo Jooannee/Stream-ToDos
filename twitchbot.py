@@ -172,32 +172,6 @@ class todoCommands(commands.Component):
         await save_done(item)
         await ctx.reply("Another one down, nice work!")
 
-# Seems like this won't work because of cross-process stuff...
-# class BotConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         await self.channel_layer.group_add(
-#             "user_register",
-#             self.channel_name
-#         )
-#         await self.accept()
-#     async def disconnect(self, code):
-#         await self.channel_layer.group_discard(
-#             "user_register",
-#             self.channel_name
-#         )
-#     async def bot_user_register(self, event):
-#         print("reached2")
-#         global _bot_instance
-#         twitch_uid = event["twitch_uid"]
-
-#         _bot_instance.add_token(event["token"], event["refresh"])
-#         if not twitch_uid or twitch_uid == BOT_ID:
-#             return
-#         resp = _bot_instance.multi_subscribe([eventsub.ChatMessageSubscription(broadcaster_user_id=event["twitch_uid"], user_id=BOT_ID)])
-#         if resp.errors:
-#             LOGGER.warning(f"Failed to subscribe to: {twitch_uid}. {resp.errors}")
-#             return
-#         LOGGER.info(f"Succesfully subscribed to: {twitch_uid}")
 
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
