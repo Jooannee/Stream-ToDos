@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const $listView = $("#list-view");
     const widgetCount = document.getElementById("widget-count");
     const widgetTitle = document.getElementById("widget-title");
+    const emptyDiv = document.getElementById("empty-state")
 
     const scrollSpeed = 0.1; //Pixels per ms
     const pauseDuration = 10000; //in ms
@@ -70,4 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollToBottom()
     //Update todo counter on page load
     updateCounter()
+
+    //Show chat hint only if on chatlist url
+    if (emptyDiv){
+        if (String(urlArgs[3]) !== "chatlist") {emptyDiv.style.display = "none";}
+        else {emptyDiv.style.display = "flex"}
+    }
 })

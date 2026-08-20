@@ -2,6 +2,7 @@ import uuid, re
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from colorfield.fields import ColorField
 
 class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -9,6 +10,7 @@ class StreamerProfile(models.Model):
     obs_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     max_viewer_todos = models.IntegerField(default=3)
     time_to_archive = models.IntegerField(default=24) # Time an item is marked as done until it's automatically archived (in hours)
+    active_theme = models.ForeignKey('ColorTheme', on_delete=models.SET_NULL, null=True, blank=True)
     
     active_streamer_list = models.ForeignKey(
         'TodoList', 
@@ -88,3 +90,26 @@ class TodoItem(models.Model):
 
     def __str__(self):
         return f"[{self.todo_list.name}] {self.title}"
+
+class ColorTheme(models.Model):
+    name = models.CharField(max_length=100, default="", blank=True)
+    public = models.BooleanField(default=False)
+    streamer = models.ForeignKey(StreamerProfile, on_delete=models.CASCADE, related_name='themes')
+
+
+    header_gradient = models.BooleanField(default=True)
+    header_grad_col1 = ColorField(format="hex")
+    header_grad_col2 = ColorField(format="hex")
+    header_title_col = ColorField(format="hex")
+
+    counter_bg_col = ColorField(format="hex")
+    counter_font_col = ColorField(format="hex")
+
+    borders_col = ColorField(format="hex")
+
+    item_bg_col = ColorField(format="hex")
+    item_dec_col = ColorField(format="hex")
+    item_index_font_col = ColorField(format="hex")
+    item_author_font_col = ColorField(format="hex")
+    item_title_font_col = ColorField(format="hex")
+    item_strike_col = ColorField(format="hex")

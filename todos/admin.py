@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import StreamerProfile, TodoList, TodoItem
+from .models import StreamerProfile, TodoList, TodoItem, ColorTheme
 # Register your models here.
 
 class TodoItemInline(admin.TabularInline):
@@ -16,4 +16,4 @@ class TodoListAdmin(admin.ModelAdmin):
 
 admin.site.register(StreamerProfile)
 admin.site.register(TodoList, TodoListAdmin)
-
+admin.site.register(ColorTheme)
