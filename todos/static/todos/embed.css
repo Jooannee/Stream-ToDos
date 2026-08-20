@@ -110,8 +110,6 @@ body {
     margin-right: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
-
-    text-decoration: none !important;
 }
 .todo-content {
     flex-grow: 1;
@@ -142,13 +140,11 @@ body {
     color: var(--item-title-font);
     padding: 0px 8px;
 }
-
-.item-completed {
+.todo-title.item-completed{
     text-decoration: line-through;
     text-decoration-thickness: 3px;
     text-decoration-color: var(--item-strike-through);
 }
-
 
 .empty-state {
     justify-content: center;

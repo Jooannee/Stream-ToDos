@@ -5,7 +5,7 @@
         </div>
         <div class="todo-content">
             <span class="todo-creator">{{item.creator_name}}</span>
-            <span class="todo-title">{{item.title}}</span>
+            <span class="todo-title item-{{item.status}}">{{item.title}}</span>
         </div>
     </div>
 {% empty %}
