@@ -110,6 +110,8 @@ body {
     margin-right: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     flex-shrink: 0;
+
+    text-decoration: none !important;
 }
 .todo-content {
     flex-grow: 1;
@@ -146,6 +148,7 @@ body {
     text-decoration-thickness: 3px;
     text-decoration-color: var(--item-strike-through);
 }
+
 
 .empty-state {
     justify-content: center;
