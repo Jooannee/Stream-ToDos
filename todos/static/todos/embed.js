@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCounter() {
-        const emptyDiv = document.getElementById("empty-state");
-        if (emptyDiv){currCount=0}
-        else{currCount = document.getElementsByClassName("item-pending").length}
+        const emptyDiv1 = document.getElementById("empty-state");
+        if (emptyDiv1){currCount=0}
+        else{currCount = Math.floor(document.getElementsByClassName("item-pending").length/2)}
         widgetCount.innerHTML = currCount;
     }
 
