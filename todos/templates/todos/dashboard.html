@@ -28,12 +28,14 @@
 
     <h2>Current Lists - {{ lists|length }}</h2>
     {% for tlist in lists %}
+        <div id="todolist-{{tlist.safe_name}}">
         {% include "todos/dash_list_partial.html" %}
+        </div>
     {% endfor %}
 
     <form action="{% url 'todos:createList' %}" method="post">
         {% csrf_token %}
-        <input type="text" name="title" id="title" pattern="[^/\\?]">
+        <input type="text" name="title" id="title" pattern="[^\/?\\]+">
         <button type="submit">Create new list</button>
     </form>
 </body>
