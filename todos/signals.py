@@ -19,7 +19,8 @@ def todo_item_change(sender, instance, **kwargs):
     obs_token = str(streamer.obs_token)
 
     groups_to_notify = [
-        f"todo_{obs_token}_{todo_list.safe_name}"
+        f"todo_{obs_token}_{todo_list.safe_name}",
+        f"dashboard_{streamer.user.username.lower()}"
     ]
     if streamer.active_chat_list_id == todo_list.id:
         groups_to_notify.append(f"todo_{obs_token}_chatlist")
@@ -31,6 +32,8 @@ def todo_item_change(sender, instance, **kwargs):
             group_name,
             {
                 "type": "todo_update",
+                "obs_token": obs_token,
+                "updated_list": todo_list.safe_name
             }
         )
 

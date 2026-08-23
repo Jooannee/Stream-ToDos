@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
     socketConnect();
 
     socket.onmessage = function(e) {
+        try {
+            const data = JSON.parse(e.data);
+            listDiv = document.getElementById(`todolist-${data.list}`)
+            switch (data.type) {
+                case "list_delete":
+                    listDiv.remove()
+                case "list_update":
+                    listDiv.innerHTML = data.html
+
+        }
+        } catch (err) {
+            console.error("Error processing websocket message: ", err);
+        }
     };
 
     socket.onclose = function(e) {

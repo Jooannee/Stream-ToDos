@@ -5,6 +5,8 @@ from channels.db import database_sync_to_async
 from django.template.loader import render_to_string
 from todos.models import StreamerProfile, TodoList, TodoItem
 
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+
 class TodoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id = str(self.scope["url_route"]["kwargs"]["user_id"])
@@ -26,7 +28,7 @@ class TodoConsumer(AsyncWebsocketConsumer):
     async def todo_update(self, event):
         title = await self.get_updated_title()
         title = title if title else "???"
-        html = await self.get_updated_html()
+        html = await self.get_updated_html_embed()
         await self.send(text_data=json.dumps({
             "type": "todo_update",
             "todo_title": title,
@@ -34,7 +36,7 @@ class TodoConsumer(AsyncWebsocketConsumer):
         }))
     
     @database_sync_to_async
-    def get_updated_html(self):
+    def get_updated_html_embed(self):
         try:
             streamer = StreamerProfile.objects.get(obs_token=self.user_id)
             if self.todo_list == "chatlist":
@@ -75,9 +77,53 @@ class DashConsumer(AsyncWebsocketConsumer):
         if str(user) == "AnonymousUser":
             await self.close()
         else:
+            self.group_name = f"dashboard_{str(user).lower()}"
+            await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+            )
             await self.accept()
     async def disconnect(self, code):
-        pass
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    async def todo_update(self, event):
+        updated_list_safe = event["updated_list"]
+        streamer = await self.get_streamer(event["obs_token"])
+        
+        try:
+            list_object = await self.get_list(updated_list_safe, streamer)
+            html = await self.get_html_dash(list_object)
+
+            await self.send(text_data=json.dumps({
+            "type": "list_update",
+            "list": updated_list_safe,
+            "html": html
+            }))
+            
+        except ObjectDoesNotExist:
+            await self.send(text_data=json.dumps({
+            "type": "list_delete",
+            "list": updated_list_safe
+            }))
+        except MultipleObjectsReturned:
+            pass
+            """TODO: DO SOMETHING HERE XD"""
+
+    @database_sync_to_async
+    def get_streamer(self, obs_token):
+        return StreamerProfile.objects.get(obs_token=obs_token)
+    @database_sync_to_async
+    def get_list(self, safe_name, streamer):
+        try:
+            return TodoList.objects.get(safe_name=safe_name, streamer=streamer)
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def get_html_dash(self, list_object):
+        return render_to_string("todos/dash_list_partial.html", {"tlist":list_object})
 
     async def receive(self, text_data = None, bytes_data = None):
         text_data_json = json.loads(text_data)
