@@ -1,0 +1,29 @@
+<h3 style="display: inline;">{{tlist.name}} - {{tlist.active_items|length}} item{{tlist.items.all|pluralize}}</h3>
+<button onclick="copyObsLink('{{tlist.safe_name}}')">Copy List OBS Source</button> <br>
+<form action="{% url 'todos:deleteList' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <input type="hidden" name="todo_list" value="{{tlist.name}}">
+    <button type="submit">Delete List!</button>
+</form>
+<form action="{% url 'todos:setChatList' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <input type="hidden" name="todo_list" value="{{tlist.name}}">
+    <button type="submit">Make this one chat's List!</button>
+</form>
+<form action="{% url 'todos:setStreamerList' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <input type="hidden" name="todo_list" value="{{tlist.name}}">
+    <button type="submit">Make this one your List!</button>
+</form>
+<ul>
+    {% for todo in tlist.active_items %}
+        <li style="display: inline-block;" class="todo-item todo-item-{{todo.status}}">{{todo.creator_name}} - {{todo.title}}</li> <button style="display: inline;" onclick="itemMarkDone('{{tlist.name}}', '{{todo.title}}')">Mark done</button> <br>
+    {% empty %}
+        <li>This list is empty!</li>
+    {% endfor %}
+</ul>
+<form action="{% url 'todos:createTodo' tlist.name%}" method="post">
+    {% csrf_token %}
+    <input type="text" name="title" id="title">
+    <button type="submit">Add new Todo</button>
+</form> <br>
