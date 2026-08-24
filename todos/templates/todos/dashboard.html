@@ -6,6 +6,7 @@
     <title>Stream ToDos Dashboard</title>
 
     {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{%static 'todos/dash.js'%}"></script>
     <link rel="stylesheet" href="{%static 'todos/dash.css'%}">
 </head>
@@ -33,9 +34,9 @@
         </div>
     {% endfor %}
 
-    <form action="{% url 'todos:createList' %}" method="post">
+    <form id="form-newlist">
         {% csrf_token %}
-        <input type="text" name="title" id="title" pattern="[^\/?\\]+">
+        <input type="text" name="title" id="newlist-title" pattern="[^\/?\\]+">
         <button type="submit">Create new list</button>
     </form>
 </body>

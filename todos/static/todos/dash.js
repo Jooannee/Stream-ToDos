@@ -14,6 +14,12 @@ function itemMarkDone(listName, itemIndex) {
         item: itemIndex
     }));
 }
+function createList(listName) {
+    socket.send(JSON.stringify({
+        type: "new_list",
+        list_name: listName,
+    }))
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     socketConnect();
@@ -24,9 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
             listDiv = document.getElementById(`todolist-${data.list}`)
             switch (data.type) {
                 case "list_delete":
-                    listDiv.remove()
+                    listDiv.remove();
+                    break;
                 case "list_update":
-                    listDiv.innerHTML = data.html
+                    listDiv.innerHTML = data.html;
+                    break;
+                case "success":
+                    console.log(`Successful task: ${data.message}`);
+                    break;
+                case "error":
+                    console.error(`Error while executing Task: ${data.message}`);
+                    break;
 
         }
         } catch (err) {
@@ -41,4 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.onerror = function(err) {
         console.error("Websocket error: ", err);
     }
+
+
+    $("#form-newlist").submit(function(event) {
+        event.preventDefault();
+        createList($("#newlist-title").val())
+    })
 })

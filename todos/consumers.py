@@ -125,6 +125,7 @@ class DashConsumer(AsyncWebsocketConsumer):
     def get_html_dash(self, list_object):
         return render_to_string("todos/dash_list_partial.html", {"tlist":list_object})
 
+
     async def receive(self, text_data = None, bytes_data = None):
         text_data_json = json.loads(text_data)
         print(text_data_json)
@@ -135,6 +136,20 @@ class DashConsumer(AsyncWebsocketConsumer):
                 itemIndex = text_data_json["item"]
                 await self.set_item_complete(str(self.scope["user"]), listName, itemIndex)
 
+            case "new_list":
+                list_name = text_data_json["list_name"]
+                try: 
+                    await self.create_new_list(str(self.scope["user"]), list_name)
+                    await self.send(text_data=json.dumps({
+                    "type": "success",
+                    "message": "New List created"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
+                
             case _:
                 pass
 
@@ -150,4 +165,23 @@ class DashConsumer(AsyncWebsocketConsumer):
             tItem.status = "completed"
             tItem.save()
         except Exception as e:
-            print(e)
+            raise e
+    @database_sync_to_async
+    def create_new_list(self, username, list_name):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            curr_lists = TodoList.objects.filter(streamer=streamer)
+            curr_list_names = curr_lists.values_list("name", flat=True)
+
+            if not list_name:
+                raise TypeError("Missing List Name")
+            if list_name in curr_list_names:
+                raise ValueError("Already have a List with that name")
+            if list_name in ["chatlist", "streamerlist"]:
+                raise ValueError("List name unallowed")
+
+            new_list = TodoList(streamer=streamer, name=list_name)
+            new_list.save()
+        except Exception as e:
+            raise e
+            
