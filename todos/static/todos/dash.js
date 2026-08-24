@@ -7,11 +7,11 @@ function socketConnect() {
     console.log("Socket connected")
 }
 
-function itemMarkDone(listName, itemName) {
+function itemMarkDone(listName, itemIndex) {
     socket.send(JSON.stringify({
         type: "mark_done",
         list: listName,
-        item: itemName
+        item: itemIndex
     }));
 }
 

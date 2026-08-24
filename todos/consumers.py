@@ -132,20 +132,20 @@ class DashConsumer(AsyncWebsocketConsumer):
             case "mark_done":
                 print("here")
                 listName = text_data_json["list"]
-                itemName = text_data_json["item"]
-                await self.set_item_complete(str(self.scope["user"]), listName, itemName)
+                itemIndex = text_data_json["item"]
+                await self.set_item_complete(str(self.scope["user"]), listName, itemIndex)
 
             case _:
                 pass
 
     @database_sync_to_async
-    def set_item_complete(self, userName, listName, itemName):
+    def set_item_complete(self, userName, listName, itemIndex):
         print("here3")
         try:
             print("here2")
             streamer = StreamerProfile.objects.get(twitch_username=userName)
             tList = TodoList.objects.get(streamer=streamer, name=listName)
-            tItem = TodoItem.objects.get(todo_list=tList, title=itemName)
+            tItem = TodoItem.objects.get(todo_list=tList, chat_index=itemIndex)
 
             tItem.status = "completed"
             tItem.save()
