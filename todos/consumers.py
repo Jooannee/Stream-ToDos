@@ -134,7 +134,17 @@ class DashConsumer(AsyncWebsocketConsumer):
                 print("here")
                 listName = text_data_json["list"]
                 itemIndex = text_data_json["item"]
-                await self.set_item_complete(str(self.scope["user"]), listName, itemIndex)
+                try:
+                    await self.toggle_item_complete(str(self.scope["user"]), listName, itemIndex)
+                    await self.send(text_data=json.dumps({
+                        "type": "success",
+                        "message": "Item marked complete"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
 
             case "new_list":
                 list_name = text_data_json["list_name"]
@@ -154,15 +164,20 @@ class DashConsumer(AsyncWebsocketConsumer):
                 pass
 
     @database_sync_to_async
-    def set_item_complete(self, userName, listName, itemIndex):
+    def toggle_item_complete(self, username, listName, itemIndex):
         print("here3")
         try:
             print("here2")
-            streamer = StreamerProfile.objects.get(twitch_username=userName)
+            streamer = StreamerProfile.objects.get(twitch_username=username)
             tList = TodoList.objects.get(streamer=streamer, name=listName)
             tItem = TodoItem.objects.get(todo_list=tList, chat_index=itemIndex)
 
-            tItem.status = "completed"
+            if tItem.status == "completed":
+                tItem.status = "pending"
+                tItem.completed_at = None
+            else:
+                tItem.status = "completed"
+
             tItem.save()
         except Exception as e:
             raise e
