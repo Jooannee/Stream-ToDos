@@ -82,33 +82,6 @@ def createProfile(request):
 
     return HttpResponseRedirect(reverse("todos:dashboard"))
 
-@login_required
-@require_POST
-def createList(request):
-    user = request.user
-    streamer = user.profile
-    lists = TodoList.objects.filter(streamer=streamer)
-    list_names = lists.values_list("name", flat=True)
-
-    list_title = request.POST.get("title", "")
-    if not list_title:
-        context = {
-        'streamer': streamer,
-        'lists': lists,
-        'error_message': "You didn't supply a title for the list!"
-        }
-        return render(request, 'todos/dashboard.html', context)
-    if list_title in list_names:
-        context = {
-        'streamer': streamer,
-        'lists': lists,
-        'error_message': "You already have a list with that name!"
-        }
-        return render(request, 'todos/dashboard.html', context)
-    
-    new_list = TodoList(streamer=streamer, name=list_title)
-    new_list.save()
-    return HttpResponseRedirect(reverse("todos:dashboard"))
 
 @login_required
 @require_POST
