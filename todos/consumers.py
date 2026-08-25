@@ -150,16 +150,33 @@ class DashConsumer(AsyncWebsocketConsumer):
                     await self.create_new_list(str(self.scope["user"]), list_name)
                     await self.send(text_data=json.dumps({
                     "type": "success",
-                    "message": "New List created"
+                    "message": f"New List created: {list_name}"
                     }))
                 except Exception as e:
                     await self.send(text_data=json.dumps({
                         "type": "error",
                         "message": str(e)
                     }))
+
+            case "delete_list":
+                list_name = text_data_json["list_name"]
+                try: 
+                    await self.delete_list(str(self.scope["user"]), list_name)
+                    await self.send(text_data=json.dumps({
+                    "type": "success",
+                    "message": f"List deleted: {list_name}"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))                
                 
             case _:
-                pass
+                await self.send(text_data=json.dumps({
+                    "type": "error",
+                    "message": "Unexpected Websocket funtion"
+                }))
 
     @database_sync_to_async
     def toggle_item_complete(self, username, listName, itemIndex):
@@ -195,4 +212,11 @@ class DashConsumer(AsyncWebsocketConsumer):
             new_list.save()
         except Exception as e:
             raise e
-            
+    @database_sync_to_async
+    def delete_list(self, username, list_name):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+            list_object.delete()
+        except Exception as e:
+            raise e

@@ -20,6 +20,12 @@ function createList(listName) {
         list_name: listName,
     }))
 }
+function deleteList(listName) {
+    socket.send(JSON.stringify({
+        type: "delete_list",
+        list_name: listName
+    }))
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     socketConnect();

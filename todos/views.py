@@ -82,18 +82,6 @@ def createProfile(request):
 
     return HttpResponseRedirect(reverse("todos:dashboard"))
 
-
-@login_required
-@require_POST
-def deleteList(request):
-    user = request.user
-    streamer = user.profile
-    todo_list = request.POST.get("todo_list", "")
-
-    tlist = TodoList.objects.get(streamer=streamer, name=todo_list)
-    tlist.delete()
-    return HttpResponseRedirect(reverse("todos:dashboard"))
-
 @login_required
 @require_POST
 def setChatList(request):
