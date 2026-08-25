@@ -1,0 +1,19 @@
+<h3 style="display: inline;">{{tlist.name}} - {{tlist.active_items|length}} item{{tlist.items.all|pluralize}}</h3>
+<button onclick="copyObsLink('{{tlist.safe_name}}')">Copy List OBS Source</button> <br>
+<button style="display: inline;" onclick="deleteList('{{tlist.name}}')">Delete List!</button>
+<button style="display: inline;" onclick="setChatList('{{tlist.name}}')">Make this list chat's List</button>
+<button style="display: inline;" onclick="setStreamerList('{{tlist.name}}')">Make this list your List</button>
+
+<ul>
+    {% for todo in tlist.active_items %}
+        <li style="display: inline-block;" class="todo-item todo-item-{{todo.status}}">{{todo.creator_name}} - {{todo.title}}</li>
+        <button style="display: inline;" onclick="itemMarkDone('{{tlist.name}}', '{{todo.chat_index}}')">Toggle Completion</button> <br>
+    {% empty %}
+        <li>This list is empty!</li>
+    {% endfor %}
+</ul>
+<form class="form-newitem">
+    <input type="hidden" name="listname" value="{{tlist.name}}">
+    <input type="text" name="itemName">
+    <button type="submit">Add new Todo</button>
+</form> <br>

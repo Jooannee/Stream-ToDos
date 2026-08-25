@@ -6,6 +6,7 @@
     <title>Stream ToDos Dashboard</title>
 
     {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{%static 'todos/dash.js'%}"></script>
     <link rel="stylesheet" href="{%static 'todos/dash.css'%}">
 </head>
@@ -27,41 +28,16 @@
     <button onclick="copyObsLink('streamerlist')">Copy Streamerlist OBS Source</button>
 
     <h2>Current Lists - {{ lists|length }}</h2>
-    {% for tlist in lists %}
-        <h3 style="display: inline;">{{tlist.name}} - {{tlist.active_items|length}} item{{tlist.items.all|pluralize}}</h3>
-        <button onclick="copyObsLink('{{tlist.safe_name}}')">Copy List OBS Source</button> <br>
-        <form action="{% url 'todos:deleteList' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="todo_list" value="{{tlist.name}}">
-            <button type="submit">Delete List!</button>
-        </form>
-        <form action="{% url 'todos:setChatList' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="todo_list" value="{{tlist.name}}">
-            <button type="submit">Make this one chat's List!</button>
-        </form>
-        <form action="{% url 'todos:setStreamerList' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="todo_list" value="{{tlist.name}}">
-            <button type="submit">Make this one your List!</button>
-        </form>
-        <ul>
-            {% for todo in tlist.active_items %}
-                <li style="display: inline-block;" class="todo-item todo-item-{{todo.status}}">{{todo.creator_name}} - {{todo.title}}</li> <button style="display: inline;" onclick="itemMarkDone('{{tlist.name}}', '{{todo.title}}')">Mark done</button> <br>
-            {% empty %}
-                <li>This list is empty!</li>
-            {% endfor %}
-        </ul>
-        <form action="{% url 'todos:createTodo' tlist.name%}" method="post">
-            {% csrf_token %}
-            <input type="text" name="title" id="title">
-            <button type="submit">Add new Todo</button>
-        </form> <br>
-    {% endfor %}
-
-    <form action="{% url 'todos:createList' %}" method="post">
+    <div id="todolists-container">    
+        {% for tlist in lists %}
+            <div id="todolist-{{tlist.safe_name}}">
+            {% include "todos/dash_list_partial.html" %}
+            </div>
+        {% endfor %}
+    </div>
+    <form id="form-newlist">
         {% csrf_token %}
-        <input type="text" name="title" id="title">
+        <input type="text" name="title" id="newlist-title" pattern="[^\/?\\]+">
         <button type="submit">Create new list</button>
     </form>
 </body>
