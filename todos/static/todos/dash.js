@@ -26,6 +26,18 @@ function deleteList(listName) {
         list_name: listName
     }))
 }
+function setChatList(listName) {
+    socket.send(JSON.stringify({
+        type: "set_chat_list",
+        list_name: listName
+    }))
+}
+function setStreamerList(listName) {
+    socket.send(JSON.stringify({
+        type: "set_streamer_list",
+        list_name: listName
+    }))
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     socketConnect();

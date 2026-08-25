@@ -170,7 +170,35 @@ class DashConsumer(AsyncWebsocketConsumer):
                     await self.send(text_data=json.dumps({
                         "type": "error",
                         "message": str(e)
-                    }))                
+                    }))
+
+            case "set_chat_list":
+                list_name = text_data_json["list_name"]
+                try: 
+                    await self.set_chat_list(str(self.scope["user"]), list_name)
+                    await self.send(text_data=json.dumps({
+                    "type": "success",
+                    "message": f"Chatlist set: {list_name}"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
+
+            case "set_streamer_list":
+                list_name = text_data_json["list_name"]
+                try: 
+                    await self.set_streamer_list(str(self.scope["user"]), list_name)
+                    await self.send(text_data=json.dumps({
+                    "type": "success",
+                    "message": f"Streamerlist set: {list_name}"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
                 
             case _:
                 await self.send(text_data=json.dumps({
@@ -218,5 +246,25 @@ class DashConsumer(AsyncWebsocketConsumer):
             streamer = StreamerProfile.objects.get(twitch_username=username)
             list_object = TodoList.objects.get(streamer=streamer, name=list_name)
             list_object.delete()
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def set_chat_list(self, username, list_name):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+
+            streamer.active_chat_list = list_object
+            streamer.save()
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def set_streamer_list(self, username, list_name):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+
+            streamer.active_streamer_list = list_object
+            streamer.save()
         except Exception as e:
             raise e

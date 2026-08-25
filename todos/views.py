@@ -84,30 +84,6 @@ def createProfile(request):
 
 @login_required
 @require_POST
-def setChatList(request):
-    user = request.user
-    streamer = user.profile
-    todo_list = request.POST.get("todo_list", "")
-
-    tlist = TodoList.objects.get(streamer=streamer, name=todo_list)
-    streamer.active_chat_list = tlist
-    streamer.save()
-    return HttpResponseRedirect(reverse("todos:dashboard"))
-
-@login_required
-@require_POST
-def setStreamerList(request):
-    user = request.user
-    streamer = user.profile
-    todo_list = request.POST.get("todo_list", "")
-
-    tlist = TodoList.objects.get(streamer=streamer, name=todo_list)
-    streamer.active_streamer_list = tlist
-    streamer.save()
-    return HttpResponseRedirect(reverse("todos:dashboard"))
-
-@login_required
-@require_POST
 def createTodo(request, todo_list:str):
     user = request.user
     streamer = user.profile
