@@ -13,7 +13,6 @@ urlpatterns = [
 
     # POST URLs
     path('createProfile/', views.createProfile, name="createProfile"),
-    path('list/<str:todo_list>/create-todo', views.createTodo, name="createTodo"),
     path('changeSettings', views.changeSettings, name="changeSettings"),
 
     # OBS Source

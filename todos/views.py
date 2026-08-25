@@ -82,28 +82,6 @@ def createProfile(request):
 
     return HttpResponseRedirect(reverse("todos:dashboard"))
 
-@login_required
-@require_POST
-def createTodo(request, todo_list:str):
-    user = request.user
-    streamer = user.profile
-    lists = TodoList.objects.filter(streamer=streamer)
-    tlist = get_object_or_404(TodoList, name=todo_list)
-
-    todo_title = request.POST.get("title", "")
-    if not todo_title:
-        context = {
-        'streamer': streamer,
-        'lists': lists,
-        'error_message': "You didn't supply a title for the todo!"
-        }
-        return render(request, 'todos/dashboard.html', context)
-    
-    new_item = TodoItem(todo_list=tlist, creator_name=streamer.twitch_username, title=todo_title)
-    new_item.save()
-    return HttpResponseRedirect(reverse("todos:dashboard"))
-
-
 
 def embed(request, user_id:uuid, todo_list:str):
     streamer = get_object_or_404(StreamerProfile, obs_token=user_id)

@@ -14,6 +14,13 @@ function itemMarkDone(listName, itemIndex) {
         item: itemIndex
     }));
 }
+function createItem(listName, itemName) {
+    socket.send(JSON.stringify({
+        type: "new_item",
+        list_name: listName,
+        item_name: itemName
+    }))
+}
 function createList(listName) {
     socket.send(JSON.stringify({
         type: "new_list",
@@ -39,6 +46,26 @@ function setStreamerList(listName) {
     }))
 }
 
+function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const element = event.currentTarget;
+    const data = new FormData(element);
+    const listName = data.get("listname");
+    const itemName = data.get("itemName");
+    
+    createItem(listName, itemName);
+}
+function formListenersCreateItem() {
+    const elements = document.getElementsByClassName("form-newitem");
+    
+    Array.from(elements).forEach((element) => {
+        element.removeEventListener("submit", handleFormSubmit);
+        element.addEventListener("submit", handleFormSubmit);
+    });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     socketConnect();
 
@@ -52,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 case "list_update":
                     listDiv.innerHTML = data.html;
+                    formListenersCreateItem();
                     break;
                 case "success":
                     console.log(`Successful task: ${data.message}`);
@@ -77,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $("#form-newlist").submit(function(event) {
         event.preventDefault();
-        createList($("#newlist-title").val())
+        createList($("#newlist-title").val());
     })
+    formListenersCreateItem();
 })

@@ -199,6 +199,23 @@ class DashConsumer(AsyncWebsocketConsumer):
                         "type": "error",
                         "message": str(e)
                     }))
+
+            case "new_item":
+                list_name = text_data_json["list_name"]
+                item_name = text_data_json["item_name"]
+
+                try:
+                    await self.create_new_item(str(self.scope["user"]), list_name, item_name)
+                    await self.send(text_data=json.dumps({
+                    "type": "success",
+                    "message": f"New item: {item_name}"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
+
                 
             case _:
                 await self.send(text_data=json.dumps({
@@ -266,5 +283,18 @@ class DashConsumer(AsyncWebsocketConsumer):
 
             streamer.active_streamer_list = list_object
             streamer.save()
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def create_new_item(self, username, list_name, item_name):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+
+            if not item_name:
+                raise ValueError("Missing item name")
+
+            new_item = TodoItem(todo_list=list_object, creator_name=username, title=item_name, status="pending")
+            new_item.save()
         except Exception as e:
             raise e
