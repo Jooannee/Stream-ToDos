@@ -103,18 +103,34 @@ class DashConsumer(AsyncWebsocketConsumer):
             "html": html
             }))
             
-        except ObjectDoesNotExist:
+        except Exception as e:
+            await self.send(text_data=json.dumps({
+                "type": "error",
+                "message": str(e)
+            }))
+
+    async def list_update(self, event):
+        updated_list_safe = event["updated_list"]
+        if event["deleted"]:
             await self.send(text_data=json.dumps({
             "type": "list_delete",
             "list": updated_list_safe
             }))
-        except MultipleObjectsReturned:
-            pass
-            """TODO: DO SOMETHING HERE XD"""
+            return
+        if event["created"]:
+            html = await self.get_html_dash(await self.get_list(updated_list_safe, await self.get_streamer_by_name(str(self.scope["user"]))))
+            await self.send(text_data=json.dumps({
+                "type": "list_create",
+                "list": updated_list_safe,
+                "html": html
+            }))
 
     @database_sync_to_async
     def get_streamer(self, obs_token):
         return StreamerProfile.objects.get(obs_token=obs_token)
+    @database_sync_to_async
+    def get_streamer_by_name(self, streamerName):
+        return StreamerProfile.objects.get(twitch_username=streamerName)
     @database_sync_to_async
     def get_list(self, safe_name, streamer):
         try:

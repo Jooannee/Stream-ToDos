@@ -81,6 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     listDiv.innerHTML = data.html;
                     formListenersCreateItem();
                     break;
+                case "list_create":
+                    listsContainer = document.getElementById("todolists-container")
+                    newDiv = listsContainer.appendChild(document.createElement("div"))
+                    newDiv.id = `todolist-${data.list}`
+                    newDiv.innerHTML = data.html
+                    formListenersCreateItem();
                 case "success":
                     console.log(`Successful task: ${data.message}`);
                     break;

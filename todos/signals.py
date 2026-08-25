@@ -9,7 +9,7 @@ from allauth.socialaccount.models import SocialToken
 
 @receiver(post_save, sender=TodoItem)
 @receiver(post_delete, sender=TodoItem)
-def todo_item_change(sender, instance, **kwargs):
+def todo_item_change(sender, instance:TodoItem, **kwargs):
     channel_layer = get_channel_layer()
     if not channel_layer:
         return
@@ -36,6 +36,41 @@ def todo_item_change(sender, instance, **kwargs):
                 "updated_list": todo_list.safe_name
             }
         )
+
+@receiver(post_save, sender=TodoList)
+def todo_list_change(sender, instance:TodoList, created, **kwargs):
+    channel_layer = get_channel_layer()
+    if not channel_layer:
+        return
+    if not created:
+        return
+
+    streamer:StreamerProfile = instance.streamer
+    async_to_sync(channel_layer.group_send)(
+        f"dashboard_{streamer.user.username.lower()}",
+        {
+            "type": "list_update",
+            "created": True,
+            "deleted": False,
+            "updated_list": instance.safe_name
+        }
+    )
+@receiver(post_delete, sender=TodoList)
+def todo_list_change(sender, instance:TodoList, **kwargs):
+    channel_layer = get_channel_layer()
+    if not channel_layer:
+        return
+
+    streamer:StreamerProfile = instance.streamer
+    async_to_sync(channel_layer.group_send)(
+        f"dashboard_{streamer.user.username.lower()}",
+        {
+            "type": "list_update",
+            "created": False,
+            "deleted": True,
+            "updated_list": instance.safe_name
+        }
+    )
 
 @receiver(post_save, sender=StreamerProfile)
 def streamer_profile_change(sender, instance, **kwargs):

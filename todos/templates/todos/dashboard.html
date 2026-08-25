@@ -28,12 +28,13 @@
     <button onclick="copyObsLink('streamerlist')">Copy Streamerlist OBS Source</button>
 
     <h2>Current Lists - {{ lists|length }}</h2>
-    {% for tlist in lists %}
-        <div id="todolist-{{tlist.safe_name}}">
-        {% include "todos/dash_list_partial.html" %}
-        </div>
-    {% endfor %}
-
+    <div id="todolists-container">    
+        {% for tlist in lists %}
+            <div id="todolist-{{tlist.safe_name}}">
+            {% include "todos/dash_list_partial.html" %}
+            </div>
+        {% endfor %}
+    </div>
     <form id="form-newlist">
         {% csrf_token %}
         <input type="text" name="title" id="newlist-title" pattern="[^\/?\\]+">
