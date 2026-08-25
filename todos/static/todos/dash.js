@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     newDiv.id = `todolist-${data.list}`
                     newDiv.innerHTML = data.html
                     formListenersCreateItem();
+                    break;
                 case "success":
                     console.log(`Successful task: ${data.message}`);
                     break;

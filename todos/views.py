@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from .models import TodoList, StreamerProfile, TodoItem
 
-import uuid
+from uuid import UUID
 
 # Basic Homepage
 def index(request):
@@ -83,7 +83,7 @@ def createProfile(request):
     return HttpResponseRedirect(reverse("todos:dashboard"))
 
 
-def embed(request, user_id:uuid, todo_list:str):
+def embed(request, user_id:UUID, todo_list:str):
     streamer = get_object_or_404(StreamerProfile, obs_token=user_id)
     if todo_list == "chatlist":
         embed_list = streamer.active_chat_list
