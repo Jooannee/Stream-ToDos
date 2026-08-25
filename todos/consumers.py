@@ -128,10 +128,8 @@ class DashConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data = None, bytes_data = None):
         text_data_json = json.loads(text_data)
-        print(text_data_json)
         match text_data_json["type"]:
             case "mark_done":
-                print("here")
                 listName = text_data_json["list"]
                 itemIndex = text_data_json["item"]
                 try:
@@ -165,9 +163,7 @@ class DashConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def toggle_item_complete(self, username, listName, itemIndex):
-        print("here3")
         try:
-            print("here2")
             streamer = StreamerProfile.objects.get(twitch_username=username)
             tList = TodoList.objects.get(streamer=streamer, name=listName)
             tItem = TodoItem.objects.get(todo_list=tList, chat_index=itemIndex)
