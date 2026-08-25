@@ -5,8 +5,6 @@ from channels.db import database_sync_to_async
 from django.template.loader import render_to_string
 from todos.models import StreamerProfile, TodoList, TodoItem
 
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-
 class TodoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id = str(self.scope["url_route"]["kwargs"]["user_id"])
@@ -117,13 +115,6 @@ class DashConsumer(AsyncWebsocketConsumer):
             "list": updated_list_safe
             }))
             return
-        if event["created"]:
-            html = await self.get_html_dash(await self.get_list(updated_list_safe, await self.get_streamer_by_name(str(self.scope["user"]))))
-            await self.send(text_data=json.dumps({
-                "type": "list_create",
-                "list": updated_list_safe,
-                "html": html
-            }))
 
     @database_sync_to_async
     def get_streamer(self, obs_token):
@@ -135,6 +126,12 @@ class DashConsumer(AsyncWebsocketConsumer):
     def get_list(self, safe_name, streamer):
         try:
             return TodoList.objects.get(safe_name=safe_name, streamer=streamer)
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def get_list_unsafe(self, name, streamer):
+        try:
+            return TodoList.objects.get(name=name, streamer=streamer)
         except Exception as e:
             raise e
     @database_sync_to_async
@@ -163,10 +160,16 @@ class DashConsumer(AsyncWebsocketConsumer):
             case "new_list":
                 list_name = text_data_json["list_name"]
                 try: 
-                    await self.create_new_list(str(self.scope["user"]), list_name)
+                    new_list = await self.create_new_list(str(self.scope["user"]), list_name)
                     await self.send(text_data=json.dumps({
                     "type": "success",
                     "message": f"New List created: {list_name}"
+                    }))
+                    html = await self.get_html_dash(await self.get_list_unsafe(list_name, await self.get_streamer_by_name(str(self.scope["user"]))))
+                    await self.send(text_data=json.dumps({
+                        "type": "list_create",
+                        "list": new_list.safe_name,
+                        "html": html
                     }))
                 except Exception as e:
                     await self.send(text_data=json.dumps({
@@ -271,6 +274,7 @@ class DashConsumer(AsyncWebsocketConsumer):
 
             new_list = TodoList(streamer=streamer, name=list_name)
             new_list.save()
+            return new_list
         except Exception as e:
             raise e
     @database_sync_to_async

@@ -37,24 +37,6 @@ def todo_item_change(sender, instance:TodoItem, **kwargs):
             }
         )
 
-@receiver(post_save, sender=TodoList)
-def todo_list_change(sender, instance:TodoList, created, **kwargs):
-    channel_layer = get_channel_layer()
-    if not channel_layer:
-        return
-    if not created:
-        return
-
-    streamer:StreamerProfile = instance.streamer
-    async_to_sync(channel_layer.group_send)(
-        f"dashboard_{streamer.user.username.lower()}",
-        {
-            "type": "list_update",
-            "created": True,
-            "deleted": False,
-            "updated_list": instance.safe_name
-        }
-    )
 @receiver(post_delete, sender=TodoList)
 def todo_list_change(sender, instance:TodoList, **kwargs):
     channel_layer = get_channel_layer()
