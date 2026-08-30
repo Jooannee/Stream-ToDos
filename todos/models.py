@@ -113,3 +113,6 @@ class ColorTheme(models.Model):
     item_author_font_col = ColorField(format="hex")
     item_title_font_col = ColorField(format="hex")
     item_strike_col = ColorField(format="hex")
+
+    def __str__(self):
+        return f"(Public) {self.name}" if self.public else self.name
