@@ -1,21 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-[#1D1122] text-[#E0BBE4]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream Todos</title>
 
-    {% load static %}
-</head>
-<body>
-    <h1>Homepage coming soon :3</h1>
-    {% if user.is_authenticated %}
-        <H3>Currently logged in as {{user.username}}</H3>
-        <a href="/accounts/">Account management here</a> <br>
-        <a href="/dashboard">Dashboard here</a>
-    {% else %}
-        <a href="/accounts/login">Twitch Login here</a>
-    {% endif %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dreamy: {
+                            bg: '#1D1122',        // Deep warm black/plum background
+                            deep: '#2D1B33',      // Warm plum/purple card base
+                            mid: '#422A4A',       // Lighter card elements
+                            light: '#7B5292',     // Cozy medium purple
+                            lavender: '#E0BBE4',  // Dreamy soft lavender pink
+                            cream: '#FFF7DA',     // Soft cozy yellow text/accents
+                        },
+                        twitch: {
+                            light: '#a855f7',
+                            DEFAULT: '#9146FF',
+                            dark: '#772CE8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Fredoka', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex flex-col min-h-full font-sans bg-gradient-to-b from-dreamy-bg via-dreamy-deep to-dreamy-bg text-slate-200">
+    <div class="flex-grow flex flex-col justify-center items-center px-4 py-16 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+        <div class="max-w-3xl z-10">
+            <div class="flex items-center justify-center gap-3.5 mb-6">
+                <div class="bg-gradient-to-br from-dreamy-light to-dreamy-lavender p-3 rounded-3xl flex items-center justify-center shadow-lg shadow-dreamy-deep/50">
+                    <i class="fa-solid fa-clipboard-check text-dreamy-bg text-3xl"></i>
+                </div>
+                <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-wide text-dreamy-cream">
+                    Stream ToDos
+                </h1>
+            </div>
+        </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                {% if user.is_authenticated %}
+                    <div class="bg-dreamy-deep border border-dreamy-lavender/10 p-2 pl-4 pr-2 rounded-2xl flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto shadow-2xl shadow-purple-950/30">
+                        <div class="flex items-center gap-2 text-dreamy-cream">
+                            <i class="fa-brands fa-twitch text-sm"></i>
+                            <span class="text-sm font-semibold">@{{ user.username }}</span>
+                        </div>
+                        <a href="/dashboard" class="w-full sm:w-auto bg-dreamy-light hover:bg-dreamy-light/85 text-white font-display font-semibold py-2.5 px-6 rounded-xl text-sm transition-all shadow-md shadow-dreamy-deep/50 flex items-center justify-center gap-2">
+                            Go to Dashboard <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="/accounts/login" class="w-full sm:w-auto bg-[#6441a5] hover:bg-[#503585] text-white font-display font-semibold py-3.5 px-8 rounded-2xl text-sm transition-all shadow-lg shadow-purple-950/40 flex items-center justify-center gap-3">
+                        <i class="fa-brands fa-twitch text-lg"></i> Connect with Twitch Login
+                    </a>
+                {% endif %}
+            </div>
+    </div>
+
+    <footer class="bg-dreamy-bg border-t border-dreamy-lavender/5 py-5 text-xs text-dreamy-lavender/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-4 lg:px-8 relative flex flex-col sm:flex-row items-center justify-center min-h-[32px]">
+            <div class="text-center text-sm">
+                <p>&copy; 2026 Stream ToDos. Made with <i class="fa-solid fa-heart text-pink-400"></i> by <a href="https://links.jooannee.dev" target="_blank" rel="noopener noreferrer" class="text-dreamy-cream hover:underline font-medium">Jooannee</a></p>
+                <a href="/imprint">Imprint</a>
+            </div>
+            <div class="sm:absolute sm:right-6 lg:right-8 flex items-center gap-3.5 text-xl text-dreamy-lavender/60 mt-3 sm:mt-0">
+                <!-- Social media & repository link space -->
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="hover:text-dreamy-cream transition-colors" title="GitHub">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="hover:text-dreamy-cream transition-colors" title="Twitter">
+                    <i class="fa-brands fa-twitter"></i>
+                </a>
+                <a href="https://twitch.com" target="_blank" rel="noopener noreferrer" class="hover:text-dreamy-cream transition-colors" title="Twitch">
+                    <i class="fa-brands fa-twitch"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
