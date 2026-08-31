@@ -46,6 +46,7 @@ class TodoList(models.Model):
         expired_items = self.items.filter(status="completed", completed_at__lte=cutoff)
         for item in expired_items:
             item.status = "archived"
+            item.archived_at = timezone.now()
             item.save()
 
         return self.items.filter(status__in=["pending", "completed"])
@@ -72,6 +73,7 @@ class TodoItem(models.Model):
     chat_index = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    archived_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['created_at']
