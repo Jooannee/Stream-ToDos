@@ -94,10 +94,16 @@ class TodoItem(models.Model):
         return f"[{self.todo_list.name}] {self.title}"
 
 class ColorTheme(models.Model):
+    STYLE_CHOICES = [
+        ("compact","Compact"),
+        ("relaxed", "Relaxed")
+    ]
+
     name = models.CharField(max_length=100, default="", blank=True)
     public = models.BooleanField(default=False)
     streamer = models.ForeignKey(StreamerProfile, on_delete=models.CASCADE, related_name='themes')
 
+    style = models.CharField(max_length=10, choices=STYLE_CHOICES, default='relaxed')
 
     header_gradient = models.BooleanField(default=True)
     header_grad_col1 = ColorField(format="hex")

@@ -6,6 +6,15 @@
     <title>Embedded Todolist: {{list.name}}</title>
     {% load static %}
     <link rel="stylesheet" href="{%static 'todos/embed.css' %}">
+    
+    {% if theme.style == "relaxed" %}
+    <link rel="stylesheet" href="{%static 'todos/embed_relaxed.css' %}">
+    {% elif theme.style == "compact" %}
+        <link rel="stylesheet" href="{%static 'todos/embed_compact.css' %}">
+    {% else %}
+        <link rel="stylesheet" href="{%static 'todos/embed_relaxed.css' %}">
+    {% endif %}
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="{%static 'todos/embed.js' %}"></script>
 </head>
