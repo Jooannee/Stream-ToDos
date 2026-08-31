@@ -70,3 +70,23 @@ def streamer_profile_change(sender, instance, **kwargs):
                 "type": "todo_update"
             }
         )
+
+@receiver(post_save, sender=SocialToken)
+def token_changed(sender, instance:SocialToken, **kwargs):
+    channel_layer = get_channel_layer()
+    if not channel_layer or not instance.account:
+        return
+    
+    token = instance.token
+    refresh = instance.token_secret
+    twitch_uid = instance.account.uid
+ 
+    async_to_sync(channel_layer.group_send)(
+        "twitch_bot_sync",
+        {
+            "type": "bot.register_streamer",
+            "token": token,
+            "refresh": refresh,
+            "twitch_uid": twitch_uid
+        }
+    )

@@ -10,7 +10,7 @@ django.setup()
 from todos.models import StreamerProfile, TodoItem, TodoList
 from allauth.socialaccount.models import SocialToken
 from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 BOT_ID = os.getenv("BOT_ID")
 OWNER_ID = os.getenv("OWNER_ID")
 
-_bot_instance = None
+active_streamer_ids: set[str] = set()
 
 @sync_to_async(thread_sensitive=True)
 def fetch_channels():
@@ -174,6 +174,48 @@ class todoCommands(commands.Component):
         await save_done(item)
         await ctx.reply(f"Another one down, nice work @{ctx.chatter.name}!")
 
+async def register_streamer(bot: Bot, uid: str, token: str, refresh_token: str):
+    try:
+        await bot.add_token(token, refresh_token)
+        if uid != BOT_ID and uid not in active_streamer_ids:
+            sub = eventsub.ChatMessageSubscription(
+                broadcaster_user_id=uid,
+                user_id=BOT_ID
+            )
+            resp = await bot.multi_subscribe([sub])
+            if getattr(resp, "errors", None):
+                LOGGER.warning(f"Error subscribing to new streamer: {uid}; {resp.errors}")
+            else:
+                active_streamer_ids.add(uid)
+                LOGGER.info(f"Subscribed to streamer: {uid}")
+    except Exception as e:
+        LOGGER.error(f"Error subscribing to new streamer: {uid}; {e}")
+
+async def channel_layer_listener(bot: Bot):
+    channel_layer = get_channel_layer()
+    if not channel_layer:
+        LOGGER.warning("Channel layer not reachable. Redis sync disabled")
+        return
+    channel_name = await channel_layer.new_channel(prefix="bot.")
+    await channel_layer.group_add("twitch_bot_sync", channel_name)
+    LOGGER.info("Listening for new registrations")
+
+    while True:
+        try:
+            event = await channel_layer.receive(channel_name)
+            if event.get("type") == "bot.register_streamer":
+                uid = event.get("twitch_uid")
+                token = event.get("token")
+                refresh_token = event.get("refresh")
+                if uid and token:
+                    LOGGER.info(f"Received registration event. Attempting to subscribe to: {uid}")
+                    await register_streamer(bot, uid, token, refresh_token)
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            LOGGER.error(f"Error in channel listener: {e}")
+            await asyncio.sleep(5)
+
 
 async def start_db() -> tuple[list[tuple[str, str]], list[eventsub.SubscriptionPayload]]:
     tokens: list[tuple[str, str]] = []
@@ -195,19 +237,21 @@ def main() -> None:
         tokens, subs = await start_db()
 
         async with Bot(subs=subs) as bot:
-            global _bot_instance
-            _bot_instance = bot
             for pair in tokens:
                 await bot.add_token(*pair)
+
+            listener_task = asyncio.create_task(channel_layer_listener(bot))
+
             
-            await bot.start(load_tokens=False, with_adapter=False)
+            try:
+                await bot.start(load_tokens=False, with_adapter=False)
+            finally:
+                listener_task.cancel()
 
     try:
         asyncio.run(runner())
     except KeyboardInterrupt:
         LOGGER.warning("Keyboardinterrupt, Shutting down Bot")
-    finally:
-        _bot_instance = None
 
 if __name__ == "__main__":
     main()
