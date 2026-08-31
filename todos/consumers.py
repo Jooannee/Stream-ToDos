@@ -42,7 +42,7 @@ class TodoConsumer(AsyncWebsocketConsumer):
             elif self.todo_list == "streamerlist":
                 embed_list = streamer.active_streamer_list
             else:
-                embed_list = TodoList.objects.get(streamer=streamer, name=self.todo_list)
+                embed_list = TodoList.objects.get(streamer=streamer, safe_name=self.todo_list)
 
             if not embed_list:
                 return "<div class=\"empty-state\"> List not Found <div>"
@@ -61,7 +61,7 @@ class TodoConsumer(AsyncWebsocketConsumer):
                 elif self.todo_list == "streamerlist":
                     embed_list = streamer.active_streamer_list
                 else:
-                    embed_list = TodoList.objects.get(streamer=streamer, name=self.todo_list)
+                    embed_list = TodoList.objects.get(streamer=streamer, safe_name=self.todo_list)
                 
                 if not embed_list:
                     return
