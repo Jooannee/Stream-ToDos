@@ -117,3 +117,6 @@ def changeSettings(request):
     streamer.max_viewer_todos = max_todos
     streamer.save()
     return HttpResponseRedirect(reverse("todos:dashboard"))
+
+def imprint(request):
+    return render(request, 'todos/imprint.html')

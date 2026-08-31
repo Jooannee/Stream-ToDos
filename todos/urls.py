@@ -5,6 +5,8 @@ app_name = "todos"
 urlpatterns = [
     # Homepage
     path('', views.index, name="index"),
+    path('imprint/', views.imprint, name="imprint"),
+    path('impressum/', views.imprint, name="impressum"),
     
     # Dashboard URLs
     path('dashboard/', views.dashboard, name="dashboard"),
