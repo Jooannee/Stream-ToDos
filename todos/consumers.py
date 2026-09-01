@@ -199,6 +199,17 @@ class DashConsumer(AsyncWebsocketConsumer):
                     "type": "success",
                     "message": f"Chatlist set: {list_name}"
                     }))
+                    streamer = await self.get_streamer_by_name(str(self.scope["user"]))
+                    lists = await self.get_streamer_lists(streamer)
+                    for l in lists:
+                        await self.channel_layer.group_send(
+                            self.group_name,
+                            {
+                                "type": "todo_update",
+                                "obs_token": str(streamer.obs_token),
+                                "updated_list": l.safe_name
+                            }
+                        )
                 except Exception as e:
                     await self.send(text_data=json.dumps({
                         "type": "error",
@@ -213,6 +224,17 @@ class DashConsumer(AsyncWebsocketConsumer):
                     "type": "success",
                     "message": f"Streamerlist set: {list_name}"
                     }))
+                    streamer = await self.get_streamer_by_name(str(self.scope["user"]))
+                    lists = await self.get_streamer_lists(streamer)
+                    for l in lists:
+                        await self.channel_layer.group_send(
+                            self.group_name,
+                            {
+                                "type": "todo_update",
+                                "obs_token": str(streamer.obs_token),
+                                "updated_list": l.safe_name
+                            }
+                        )
                 except Exception as e:
                     await self.send(text_data=json.dumps({
                         "type": "error",
@@ -318,3 +340,6 @@ class DashConsumer(AsyncWebsocketConsumer):
             new_item.save()
         except Exception as e:
             raise e
+    @database_sync_to_async
+    def get_streamer_lists(self, streamer):
+        return list(TodoList.objects.filter(streamer=streamer))
