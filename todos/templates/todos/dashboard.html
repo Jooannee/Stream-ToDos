@@ -1,14 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-[#1D1122] text-[#E0BBE4]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream ToDos Dashboard</title>
 
     {% load static %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dreamy: {
+                            bg: '#1D1122',
+                            deep: '#2D1B33',
+                            mid: '#422A4A',
+                            light: '#7B5292',
+                            lavender: '#E0BBE4',
+                            cream: '#FFF7DA',
+                            teal: '#083D41',
+                        },
+                        twitch: {
+                            light: '#a855f7',
+                            DEFAULT: '#9146FF',
+                            dark: '#772CE8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Fredoka', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="{%static 'todos/dash.js'%}"></script>
-    <link rel="stylesheet" href="{%static 'todos/dash.css'%}">
+    <script src="{% static 'todos/dash.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'todos/dash.css' %}">
 </head>
 <script type="text/javascript">
     function copyObsLink(todoList) {
@@ -18,27 +52,133 @@
 </script>
 
 
-<body>
-    <h1>Stream Todos</h1>
-    <h3 style="display: inline;">Welcome {{user.username}}</h3> <a href="/accounts/">Account management</a> <a href="/settings/">User Settings</a> <br>
-    {% if error_message %}
-        <strong>{{error_message}}</strong> <br>
-    {% endif %}
-    <button onclick="copyObsLink('chatlist')">Copy Chatlist OBS Source</button>
-    <button onclick="copyObsLink('streamerlist')">Copy Streamerlist OBS Source</button>
+<body class="flex flex-col min-h-full font-sans bg-gradient-to-b from-dreamy-bg via-dreamy-deep to-dreamy-bg text-slate-200">
+    <nav class="bg-dreamy-deep/90 border-b border-dreamy-lavender/10 sticky top-0 z-40 shadow-lg backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-dreamy-light to-dreamy-lavender p-2 rounded-xl flex items-center justify-center shadow-md shadow-dreamy-deep/50">
+                        <i class="fa-solid fa-clipboard-check text-dreamy-bg text-lg"></i>
+                    </div>
+                    <span class="font-display text-xl font-bold tracking-wide text-dreamy-cream">
+                        Stream ToDos
+                    </span>
+                    <span class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10">Open Beta - Report any Issues please! :3</span>
+                </div>
 
-    <h2>Current Lists - {{ lists|length }}</h2>
-    <div id="todolists-container">    
-        {% for tlist in lists %}
-            <div id="todolist-{{tlist.safe_name}}">
-            {% include "todos/dash_list_partial.html" %}
+                <div class="flex items-center gap-4">
+                    <div class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10">
+                        <i class="fa-brands fa-twitch text-[13px]"></i>
+                        <span class="text-xs font-semibold">@{{ user.username }}</span>
+                    </div>
+                    
+                    <div class="h-6 w-[1px] bg-dreamy-lavender/10 hidden sm:block"></div>
+
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'todos:settings' %}" class="text-xs sm:text-sm text-dreamy-lavender/80 hover:text-dreamy-cream px-3 py-2 rounded-md transition-colors hover:bg-dreamy-mid/40" title="Widget Settings">
+                            <i class="fa-solid fa-sliders sm:mr-1"></i> <span class="hidden sm:inline">Settings</span>
+                        </a>
+                        <a href="/accounts/" class="text-xs sm:text-sm text-dreamy-lavender/80 hover:text-dreamy-cream px-3 py-2 rounded-md transition-colors hover:bg-dreamy-mid/40" title="Account Settings">
+                            <i class="fa-solid fa-user-cog sm:mr-1"></i> <span class="hidden sm:inline">Account</span>
+                        </a>
+                        <a href="{% url 'account_logout' %}" class="text-xs sm:text-sm text-red-300 hover:text-red-200 px-3 py-2 rounded-md transition-colors hover:bg-red-950/20">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                        </a>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    </div>
-    <form id="form-newlist">
-        {% csrf_token %}
-        <input type="text" name="title" id="newlist-title" pattern="[^\/?\\]+">
-        <button type="submit">Create new list</button>
-    </form>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-dreamy-deep/80 border border-dreamy-lavender/10 rounded-2xl py-3 px-6 shadow-xl shadow-purple-950/20 backdrop-blur-md flex flex-col justify-between hover:border-dreamy-lavender/25 transition-all duration-300">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="bg-dreamy-mid/50 p-2.5 rounded-xl border border-dreamy-lavender/10 text-dreamy-cream">
+                            <i class="fa-solid fa-video text-base"></i>
+                        </div>
+                        <h2 class="font-display text-lg font-bold text-dreamy-cream tracking-wide">OBS Overlay Links</h2>
+                    </div>
+                    <p class="text-xs text-dreamy-lavender mb-3 leading-5">
+                        Add these URLs as <strong class="text-dreamy-cream">Browser Sources</strong> in OBS. Any dimensions should work, however at very small levels it is heavily recommended to remove any styling from the "custom css" input box.
+                    </p>
+                    <p class="text-xs text-dreamy-lavender mb-6 leading-5">
+                        You can change which list belongs to your chat and yourself further below, or copy direct embedded links to specific lists as well!
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="copyObsLink('chatlist')" class="w-full flex items-center justify-between bg-dreamy-mid/55 hover:bg-dreamy-mid border border-dreamy-lavender/15 hover:border-dreamy-lavender/30 rounded-xl px-4 py-3 transition-all group shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-brands fa-twitch text-dreamy-lavender group-hover:text-dreamy-cream text-base group-hover:scale-105 transition-transform"></i>
+                            <div class="text-left">
+                                <p class="text-xs font-semibold text-slate-200 group-hover:text-white">Chat List</p>
+                                <p class="text-[10px] text-dreamy-lavender/80">Things your chat is working on</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-copy text-dreamy-lavender/40 group-hover:text-dreamy-cream text-sm transition-colors"></i>
+                    </button>
+
+                    <button onclick="copyObsLink('streamerlist')" class="w-full flex items-center justify-between bg-dreamy-mid/55 hover:bg-dreamy-mid border border-dreamy-lavender/15 hover:border-dreamy-lavender/30 rounded-xl px-4 py-3 transition-all group shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-user-tie text-dreamy-cream/70 group-hover:text-dreamy-cream text-base group-hover:scale-105 transition-transform"></i>
+                            <div class="text-left">
+                                <p class="text-xs font-semibold text-slate-200 group-hover:text-white">Streamer List</p>
+                                <p class="text-[10px] text-dreamy-lavender/80">What you're working hard(ly) on</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-copy text-dreamy-lavender/40 group-hover:text-dreamy-cream text-sm transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-dreamy-deep/80 border border-dreamy-lavender/10 rounded-2xl px-6 py-3 shadow-xl shadow-purple-950/20 backdrop-blur-md hover:border-dreamy-lavender/25 transition-all duration-300">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-dreamy-mid/50 p-2.5 rounded-xl border border-dreamy-lavender/10 text-dreamy-cream">
+                        <i class="fa-solid fa-chart-simple text-base"></i>
+                    </div>
+                    <h2 class="font-display text-lg font-bold text-dreamy-cream tracking-wide">Your Stats</h2>
+                </div>
+                <div class="flex items-center justify-center text-center text-dreamy-lavender">
+                    <p>Coming Soon&trade;! (maybe/hopefully/we'll see/it's me after all)</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-dreamy-lavender/10 my-1">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="font-display text-2xl font-bold text-dreamy-cream flex items-center gap-2">
+                    Your Lists
+                    <span class="bg-dreamy-mid text-dreamy-lavender text-base px-2.5 py-0.5 rounded-full border border-dreamy-lavender/20" id="lists-count">
+                        {{ lists|length }}
+                    </span>
+                </h2>
+                <p class="text-xs text-dreamy-lavender/80 mt-1">Create lists, add items, show them on stream!</p>
+            </div>
+
+            <form id="form-newlist" class="flex items-center gap-2 bg-dreamy-deep/60 p-2 rounded-xl border border-dreamy-lavender/10 shadow-md max-w-sm w-full">
+                {% csrf_token %}
+                <div class="relative flex-grow">
+                    <input type="text" name="title" id="newlist-title" required pattern="[^\/?\\]+" placeholder="List name (e.g. Speedrun)"
+                        class="bg-[#180E1C] border border-dreamy-lavender/15 focus:border-dreamy-lavender text-xs block w-full pl-3 pr-3 py-2.5 rounded-lg outline-none text-dreamy-cream transition-all placeholder-dreamy-lavender/30">
+                </div>
+                <button type="submit" class="bg-dreamy-light hover:bg-dreamy-light/85 text-white font-display font-semibold p-2.5 px-4 rounded-lg text-sm transition-colors flex items-center gap-1.5 shrink-0 shadow-sm">
+                    <i class="fa-solid fa-plus text-sm"></i> Create
+                </button>
+            </form>
+        </div>
+        <div id="todolists-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+            {% for tlist in lists %}
+                <div id="todolist-{{ tlist.safe_name }}" class="bg-dreamy-deep border border-dreamy-lavender/10 rounded-2xl shadow-xl flex flex-col h-full hover:border-dreamy-lavender/30 hover:shadow-purple-950/20 transition-all duration-300">
+                    {% include "todos/dash_list_partial.html" %}
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    {% include "todos/footer_partial.html" %}
 </body>
 </html>
