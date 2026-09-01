@@ -46,8 +46,16 @@
 </head>
 <script type="text/javascript">
     function copyObsLink(todoList) {
-        let finalLink = window.location.protocol+"//"+window.location.host+"/embed/"+"{{streamer.obs_token}}"+"/"+todoList;
-        navigator.clipboard.writeText(finalLink);
+        let finalLink = window.location.protocol + "//" + window.location.host + "/embed/" + "{{ streamer.obs_token }}" + "/" + todoList;
+        navigator.clipboard.writeText(finalLink).then(() => {
+            if (window.showToast) {
+                window.showToast(`${todoList} URL copied to clipboard!`);
+            } else {
+                alert("OBS Source URL copied!");
+            }
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
     }
 </script>
 
@@ -89,6 +97,24 @@
             </div>
         </div>
     </nav>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="px-4 py-3 rounded-xl shadow-2xl text-white {% if message.tags == 'success' %}bg-green-600{% else %}bg-red-600{% endif %} flex items-center gap-3 border border-white/10 min-w-[280px] max-w-sm animate-slide-in">
+                    {% if message.tags == 'success' %}
+                        <i class="fa-solid fa-circle-check text-lg"></i>
+                    {% else %}
+                        <i class="fa-solid fa-circle-exclamation text-lg"></i>
+                    {% endif %}
+                    <span class="text-sm font-medium">{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-white/80 hover:text-white transition-opacity">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
