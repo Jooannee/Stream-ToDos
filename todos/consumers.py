@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.template.loader import render_to_string
 from todos.models import StreamerProfile, TodoList, TodoItem
+from django.core.exceptions import ObjectDoesNotExist
 
 class TodoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -100,7 +101,8 @@ class DashConsumer(AsyncWebsocketConsumer):
             "list": updated_list_safe,
             "html": html
             }))
-            
+        except ValueError:
+            pass
         except Exception as e:
             await self.send(text_data=json.dumps({
                 "type": "error",
@@ -126,6 +128,8 @@ class DashConsumer(AsyncWebsocketConsumer):
     def get_list(self, safe_name, streamer):
         try:
             return TodoList.objects.get(safe_name=safe_name, streamer=streamer)
+        except ObjectDoesNotExist:
+            raise ValueError("List does not exist. Likely just deleted")
         except Exception as e:
             raise e
     @database_sync_to_async
