@@ -123,6 +123,26 @@ function setStreamerList(listName) {
     }
 }
 
+function itemArchive(listName, itemIndex) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            type: "archive_item",
+            list_name: listName,
+            item: itemIndex
+        }));
+    }
+}
+
+function itemDelete(listName, itemIndex) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            type: "delete_item",
+            list_name: listName,
+            item: itemIndex
+        }));
+    }
+}
+
 function handleFormSubmit(event) {
     event.preventDefault();
     const element = event.currentTarget;

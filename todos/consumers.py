@@ -261,7 +261,38 @@ class DashConsumer(AsyncWebsocketConsumer):
                         "message": str(e)
                     }))
 
-                
+            case "archive_item":
+                list_name = text_data_json["list_name"]
+                item_index = text_data_json["item"]
+
+                try:
+                    await self.archive_item(str(self.scope["user"]), list_name, item_index)
+                    await self.send(text_data=json.dumps({
+                        "type": "success",
+                        "message": f"Item {item_index} archived"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
+
+            case "delete_item":
+                list_name = text_data_json["list_name"]
+                item_index = text_data_json["item"]
+
+                try:
+                    await self.delete_item(str(self.scope["user"]), list_name, item_index)
+                    await self.send(text_data=json.dumps({
+                        "type": "success",
+                        "message": f"Item {item_index} deleted"
+                    }))
+                except Exception as e:
+                    await self.send(text_data=json.dumps({
+                        "type": "error",
+                        "message": str(e)
+                    }))
+
             case _:
                 await self.send(text_data=json.dumps({
                     "type": "error",
@@ -344,6 +375,29 @@ class DashConsumer(AsyncWebsocketConsumer):
             new_item.save()
         except Exception as e:
             raise e
+    @database_sync_to_async
+    def archive_item(self, username, list_name, item_index):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+            item_object = TodoItem.objects.get(todo_list=list_object, chat_index=item_index)
+
+            item_object.status = "archived"
+            item_object.save()
+        except Exception as e:
+            raise e
+    @database_sync_to_async
+    def delete_item(self, username, list_name, item_index):
+        try:
+            streamer = StreamerProfile.objects.get(twitch_username=username)
+            list_object = TodoList.objects.get(streamer=streamer, name=list_name)
+            item_object = TodoItem.objects.get(todo_list=list_object, chat_index=item_index)
+
+            item_object.delete()
+        except Exception as e:
+            raise e
+
+        
     @database_sync_to_async
     def get_streamer_lists(self, streamer):
         return list(TodoList.objects.filter(streamer=streamer))

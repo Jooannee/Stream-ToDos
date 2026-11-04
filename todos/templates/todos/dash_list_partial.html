@@ -77,7 +77,11 @@
             </div>
 
             <span class="text-xs font-mono text-dreamy-lavender/80 bg-dreamy-bg border border-dreamy-lavender/10 px-1.5 py-0.5 rounded shrink-0">
-                {{ todo.chat_index }}
+                    <button onclick="itemDelete(`{{tlist.name}}`, `{{todo.chat_index}}`)"
+                    class="p-2 rounded-lg text-dreamy-lavender/90 hover:text-red-400 hover:bg-red-950/20 border border-transparent text-xs font-medium transition-all"
+                    title="Archive Item">
+                        <i class="fa-solid fa-trash-can"></i>
+                </button>
             </span>
         </div>
     {% empty %}
