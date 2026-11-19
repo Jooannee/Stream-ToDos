@@ -7,7 +7,7 @@ from colorfield.fields import ColorField
 class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     twitch_username = models.CharField(max_length=100, unique=True)
-    profile_picture = models.ImageField(upload_to="profile_picture/%Y-%m-%d/", blank=False, null=False,default='uploads/profile_picture/default.jpg')
+    profile_picture = models.ImageField(upload_to="profile_picture/%Y-%m-%d/", blank=False, null=False,default='profile_picture/default.jpg')
     obs_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     max_viewer_todos = models.IntegerField(default=3)
     time_to_archive = models.IntegerField(default=24) # Time an item is marked as done until it's automatically archived (in hours)

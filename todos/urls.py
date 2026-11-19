@@ -1,5 +1,7 @@
 from django.urls import path, include
+from django.conf.urls.static import static
 from . import views
+from django.conf import settings
 
 app_name = "todos"
 urlpatterns = [
@@ -18,5 +20,5 @@ urlpatterns = [
     path('changeSettings', views.changeSettings, name="changeSettings"),
 
     # OBS Source
-    path('embed/<uuid:user_id>/<str:todo_list>/', views.embed, name="embed")
-]
+    path('embed/<uuid:user_id>/<str:todo_list>/', views.embed, name="embed"),
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
