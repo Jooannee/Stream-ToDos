@@ -21,3 +21,4 @@ COPY . /app/
 
 # Create directory for collected static files
 RUN mkdir -p /app/staticfiles
+RUN mkdir -p /app/uploads
