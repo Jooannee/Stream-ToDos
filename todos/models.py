@@ -33,6 +33,7 @@ class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     twitch_username = models.CharField(max_length=100, unique=True)
     profile_picture = models.ImageField(upload_to="profile_picture/%Y-%m-%d/", blank=False, null=False,default='profile_picture/default.jpg')
+    bio = models.CharField(max_length=200, blank=True, null=True)
     obs_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     max_viewer_todos = models.IntegerField(default=3)
     time_to_archive = models.IntegerField(default=24) # Time an item is marked as done until it's automatically archived (in hours)
