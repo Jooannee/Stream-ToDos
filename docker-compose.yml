@@ -20,7 +20,9 @@ services:
   web:
     build: .
     command: >
-      sh -c "python manage.py migrate --noinput &&
+      sh -c "mkdir -p /app/uploads/profile_picture &&
+             cp -n /app/default.jpg /app/uploads/profile_picture/default.jpg &&
+             python manage.py migrate --noinput &&
              python manage.py collectstatic --noinput &&
              daphne -b 0.0.0.0 -p 8000 streamToDo.asgi:application"
     volumes:
