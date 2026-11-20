@@ -14,6 +14,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name="dashboard"),
     path('tutorial/', views.tutorial, name="tutorial"),
     path('settings/', views.settings, name="settings"), 
+    path('profile/', views.profile, name="profile"),
+    path('profile/<str:username>', views.profile, name="profile"),
 
     # POST URLs
     path('createProfile/', views.createProfile, name="createProfile"),

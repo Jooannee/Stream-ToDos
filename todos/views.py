@@ -120,3 +120,14 @@ def changeSettings(request):
 
 def imprint(request):
     return render(request, 'todos/imprint.html')
+
+def profile(request, username:str|None=None):
+    if not username:
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("todos:index"))
+        print(request.user.username)
+        streamer = get_object_or_404(StreamerProfile, twitch_username=request.user.username)
+    else:
+        streamer = get_object_or_404(StreamerProfile, twitch_username=username)
+    
+    return render(request, 'todos/profile.html', {"streamer": streamer})
