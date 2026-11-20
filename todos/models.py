@@ -3,6 +3,31 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from colorfield.fields import ColorField
+from io import BytesIO
+from django.core.files.base import ContentFile
+from PIL import Image, ImageOps
+
+def square_image(image_field, size=500, quality=85):
+    img = Image.open(image_field)
+    img = ImageOps.exif_transpose(img)
+
+    squared = ImageOps.fit(img, (size,size), method=Image.Resampling.LANCZOS)
+
+    if squared.mode in ("RGBA", "LA", "P"):
+        background = Image.new("RGB", squared.size, (255,255,255))
+        if squared.mode =="P":
+            squared = squared.convert("RGBA")
+        background.paste(squared, mask=squared.split()[-1] if "A" in squared.mode else None)
+        squared = background
+    elif squared.mode != "RGB":
+        squared = squared.convert("RGB")
+
+    buffer = BytesIO()
+    squared.save(buffer, format="JPEG", quality=quality, optimize=True)
+    buffer.seek(0)
+
+    base_name = image_field.name.rsplit(".", 1)[0]
+    return ContentFile(buffer.read(), name=f"{base_name}_square{size}px.jpg")
 
 class StreamerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -30,6 +55,22 @@ class StreamerProfile(models.Model):
 
     def __str__(self):
         return self.twitch_username
+    
+    def save(self, *args, **kwargs):
+        if self.profile_picture and not getattr(self.profile_picture, "_is_squared", False):
+            if self._state.adding or self._has_new_avatar():
+                squared_file = square_image(self.profile_picture, size=500)
+                squared_file._is_squared = True
+                self.profile_picture.save(squared_file.name, squared_file, save=False)
+        super().save(*args, **kwargs)
+    def _has_new_avatar(self):
+        if not self.pk:
+            return True
+        try:
+            old_pp = StreamerProfile.objects.get(pk=self.pk).profile_picture
+            return bool(old_pp) and old_pp.name != self.profile_picture.name
+        except StreamerProfile.DoesNotExist:
+            return True
 
 
 class TodoList(models.Model):
