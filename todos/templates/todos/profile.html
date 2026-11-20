@@ -82,7 +82,11 @@
         <div class="bg-dreamy-deep/80 border border-dreamy-lavender/10 rounded-2xl py-3 px-6 shadow-xl shadow-purple-950/20 backdrop-blur-md flex flex-col hover:border-dreamy-lavender/25 transition-all duration-300 col-span-1 w-full items-center">
             <img src="{{streamer.profile_picture.url}}" alt="{{streamer.twitch_username}}'s Profile Picture" class="aspect-square rounded-full max-w-[200px]">
             <span class="font-display text-xl font-bold text-dreamy-cream tracking-wide">{{streamer.twitch_username}}</span>
+            {% if streamer.bio %}
             <p class="text-sm text-dreamy-lavender mb-3 leading-5">{{streamer.bio}}</p>
+            {% else %}
+            <p class="text-sm text-dreamy-lavender mb-3 leading-5 italic">Apparently {{streamer.twitch_username}} has nothing to say about themselves</p>
+            {% endif %}
             <a href="https://www.twitch.tv/{{streamer.twitch_username}}" target="_blank" rel="noopener noreferrer" class="hover:text-dreamy-cream transition-colors" title="Twitch">
             <i class="fa-brands fa-twitch"></i>
             </a>
