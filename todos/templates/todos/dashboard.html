@@ -61,43 +61,7 @@
 
 
 <body class="flex flex-col min-h-full font-sans bg-gradient-to-b from-dreamy-bg via-dreamy-deep to-dreamy-bg text-slate-200">
-    <nav class="bg-dreamy-deep/90 border-b border-dreamy-lavender/10 sticky top-0 z-40 shadow-lg backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="bg-gradient-to-br from-dreamy-light to-dreamy-lavender p-2 rounded-xl flex items-center justify-center shadow-md shadow-dreamy-deep/50">
-                        <i class="fa-solid fa-clipboard-check text-dreamy-bg text-lg"></i>
-                    </div>
-                    <span class="font-display text-xl font-bold tracking-wide text-dreamy-cream">
-                        Stream ToDos
-                    </span>
-                    <span class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10">Open Beta - Report any Issues please! :3</span>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <div class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10">
-                        <i class="fa-brands fa-twitch text-[13px]"></i>
-                        <span class="text-xs font-semibold">@{{ user.username }}</span>
-                    </div>
-                    
-                    <div class="h-6 w-[1px] bg-dreamy-lavender/10 hidden sm:block"></div>
-
-                    <div class="flex items-center gap-2">
-                        <a href="{% url 'todos:settings' %}" class="text-xs sm:text-sm text-dreamy-lavender/80 hover:text-dreamy-cream px-3 py-2 rounded-md transition-colors hover:bg-dreamy-mid/40" title="Widget Settings">
-                            <i class="fa-solid fa-sliders sm:mr-1"></i> <span class="hidden sm:inline">Settings</span>
-                        </a>
-                        <a href="/accounts/" class="text-xs sm:text-sm text-dreamy-lavender/80 hover:text-dreamy-cream px-3 py-2 rounded-md transition-colors hover:bg-dreamy-mid/40" title="Account Settings">
-                            <i class="fa-solid fa-user-cog sm:mr-1"></i> <span class="hidden sm:inline">Account</span>
-                        </a>
-                        <a href="{% url 'account_logout' %}" class="text-xs sm:text-sm text-red-300 hover:text-red-200 px-3 py-2 rounded-md transition-colors hover:bg-red-950/20">
-                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+    {% include "todos/header_partial.html" %}
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
         {% if messages %}
             {% for message in messages %}
