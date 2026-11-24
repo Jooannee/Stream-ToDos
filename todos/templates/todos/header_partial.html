@@ -6,11 +6,12 @@
                     <i class="fa-solid fa-clipboard-check text-dreamy-bg text-lg"></i>
                 </div>
                 <span class="font-display text-xl font-bold tracking-wide text-dreamy-cream">
-                    Stream ToDos
+                    <a {% if user.is_authenticated %} href="{% url 'todos:dashboard' %}" {% else %} href="{% url 'todos:index' %} {% endif %}">Stream ToDos</a>
                 </span>
                 <span class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10 hidden md:block">Open Beta - Report any Issues please! :3</span>
             </div>
 
+            {% if user.is_authenticated %}
             <div class="flex items-center gap-4">
                 <div class="bg-dreamy-mid text-dreamy-lavender text-xs px-3 py-1.5 rounded-full font-medium border border-dreamy-lavender/10">
                     <i class="fa-brands fa-twitch text-[13px]"></i>
@@ -31,6 +32,11 @@
                     </a>
                 </div>
             </div>
+            {% else %}
+                <a href="{% url 'account_login' %}" class="text-xs sm:text-sm text-dreamy-lavender/80 hover:text-dreamy-cream px-3 py-2 rounded-md transition-colors hover:bg-dreamy-mid/40">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Login
+                </a>
+            {% endif %}
         </div>
     </div>
 </nav>
